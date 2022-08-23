@@ -1,0 +1,9 @@
+{
+    "name": "checkme_server",
+    "version": "0.1.0",
+    "type": "module",
+    "private": true,
+    "dependencies": {
+        "express": "^4.18.1"
+    }
+}
