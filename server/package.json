@@ -1,7 +1,7 @@
 {
     "name": "checkme_server",
     "version": "0.1.0",
-    "type": "module",
+    "type": "commonjs",
     "private": true,
     "dependencies": {
         "express": "^4.18.1"
