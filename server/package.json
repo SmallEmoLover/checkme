@@ -4,6 +4,7 @@
     "type": "commonjs",
     "private": true,
     "dependencies": {
-        "express": "^4.18.1"
+        "express": "^4.18.1",
+        "cors": "^2.8.5"
     }
 }

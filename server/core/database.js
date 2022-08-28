@@ -18,6 +18,13 @@ function get_check_results(check_id) {
     return checks.get(check_id);
 }
 
+function get_all_tasks() {
+    return [
+        {id: 1, name: 'Git'},
+        {id: 2, name: 'Jenkins'}
+    ]
+}
+
 function *makeIdGenerator() {
     for (i = 1; ; i++) {
         yield i;
@@ -27,3 +34,4 @@ function *makeIdGenerator() {
 module.exports.create_task_check = create_task_check;
 module.exports.set_check_results = set_check_results;
 module.exports.get_check_results = get_check_results;
+module.exports.get_all_tasks = get_all_tasks;

@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const database = require('./core/database');
 const utils = require('./core/utils');
 
@@ -6,6 +7,7 @@ const port = 9999;
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 /**
  * GET-endpoint to check server availability
@@ -43,6 +45,17 @@ app.get('/results/:check_id(\\d+)', utils.runRouteAsync(async (request, response
     const results = await database.get_check_results(check_id);
     response.send(JSON.stringify({results: results}));
 }));
+
+/**
+ * GET-endpoint to get all available tasks
+ * @name /tasks
+ * @function
+ * @returns sends list with tasks
+ */
+app.get('/tasks', utils.runRouteAsync(async (_, response) => {
+    const tasks = await database.get_all_tasks();
+    response.send(JSON.stringify({tasks: tasks}));
+}))
 
 app.listen(port, () => {
     console.log(`App listening at the ${port} port`);
