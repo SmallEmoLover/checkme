@@ -25,6 +25,25 @@ function get_all_tasks() {
     ]
 }
 
+function get_task(task_id) {
+    if (task_id === 1) {
+        return {
+            name: 'Git',
+            arguments: [
+                'Git link',
+                'Your surname'
+            ]
+        }
+    } else {
+        return {
+            name: 'Jenkins',
+            arguments: [
+                'Job name',
+            ]
+        }
+    }
+}
+
 function *makeIdGenerator() {
     for (i = 1; ; i++) {
         yield i;
@@ -35,3 +54,4 @@ module.exports.create_task_check = create_task_check;
 module.exports.set_check_results = set_check_results;
 module.exports.get_check_results = get_check_results;
 module.exports.get_all_tasks = get_all_tasks;
+module.exports.get_task = get_task;

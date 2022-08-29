@@ -30,8 +30,7 @@ app.post('/check/:task_id(\\d+)', utils.runRouteAsync(async (request, response) 
     let check_id = await database.create_task_check(task_id);
     let results = solve_task(task_id, request.body.arguments);
     database.set_check_results(check_id, results);
-
-    response.send(JSON.stringify({check_id: check_id}))
+    response.send(JSON.stringify({checkId: check_id}))
 }));
 
 /**
@@ -43,7 +42,7 @@ app.post('/check/:task_id(\\d+)', utils.runRouteAsync(async (request, response) 
 app.get('/results/:check_id(\\d+)', utils.runRouteAsync(async (request, response) => {
     let check_id = Number(request.params.check_id);
     const results = await database.get_check_results(check_id);
-    response.send(JSON.stringify({results: results}));
+    response.send(JSON.stringify(results));
 }));
 
 /**
@@ -54,7 +53,19 @@ app.get('/results/:check_id(\\d+)', utils.runRouteAsync(async (request, response
  */
 app.get('/tasks', utils.runRouteAsync(async (_, response) => {
     const tasks = await database.get_all_tasks();
-    response.send(JSON.stringify({tasks: tasks}));
+    response.send(JSON.stringify(tasks));
+}))
+
+/**
+ * GET-endpoint to get task with task_id
+ * @name /task/:task_id
+ * @function
+ * @returns sends task with specified id
+ */
+ app.get('/task/:task_id(\\d+)', utils.runRouteAsync(async (request, response) => {
+    let task_id = Number(request.params.task_id);
+    const task = await database.get_task(task_id);
+    response.send(JSON.stringify(task));
 }))
 
 app.listen(port, () => {
