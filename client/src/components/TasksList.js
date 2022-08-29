@@ -1,16 +1,26 @@
-import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 import '../styles/TasksList.css'
 import Loading from './Loading';
 
+/**
+ * Component to show all available tasks
+ */
 function TasksList() {
-    let [fetchTasks, data, loading, error] = useFetch({tasks: []});
-    useEffect(() => {fetchTasks('http://localhost:9999/tasks')}, [])
-    return(
+    let [tasks, error] = useFetch('http://localhost:9999/tasks');
+
+    if (!tasks) {
+        return <Loading/>
+    }
+
+    return (
         <div>
-            <Loading isLoading={loading}/>
-            {data.tasks.map((task) => {
-                return <div> {task.name} </div>
+            {tasks && tasks.map((task) => {
+                return (
+                    <Link key={task.id} to={`/task/${task.id}`}>
+                        <div> {task.name} </div>
+                    </Link>
+                )
             })}
         </div>
     )

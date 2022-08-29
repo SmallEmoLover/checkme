@@ -1,11 +1,11 @@
+import { Outlet } from 'react-router-dom';
 import '../styles/App.css';
-import TasksList from './TasksList';
 
 function App() {
     return (
         <div className="App">
             Checkme
-            <TasksList/>
+            <Outlet/>
         </div>
     );
 }
