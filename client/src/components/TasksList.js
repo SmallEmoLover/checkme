@@ -17,7 +17,7 @@ function TasksList() {
         <div>
             {tasks && tasks.map((task) => {
                 return (
-                    <Link key={task.id} to={`/task/${task.id}`}>
+                    <Link key={task._id} to={`/task/${task._id}`}>
                         <div> {task.name} </div>
                     </Link>
                 )

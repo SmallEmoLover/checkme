@@ -1,9 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-const database = require('./core/database');
 const utils = require('./core/utils');
+const Database = require('./core/database');
 
 const port = 9999;
+
+const database = new Database('mongodb://127.0.0.1:27017/?retryWrites=true&w=majority');
 
 const app = express();
 app.use(express.json());
@@ -25,8 +27,8 @@ app.get('/ping', (_, response) => {
  * @function
  * @returns sends created check id to sender
  */
-app.post('/check/:task_id(\\d+)', utils.runRouteAsync(async (request, response) => {
-    let task_id = Number(request.params.task_id);
+app.post('/check/:task_id', utils.runRouteAsync(async (request, response) => {
+    const task_id = request.params.task_id;
     let check_id = await database.create_task_check(task_id);
     let results = solve_task(task_id, request.body.arguments);
     database.set_check_results(check_id, results);
@@ -39,9 +41,8 @@ app.post('/check/:task_id(\\d+)', utils.runRouteAsync(async (request, response) 
  * @function
  * @returns sends check results
  */
-app.get('/results/:check_id(\\d+)', utils.runRouteAsync(async (request, response) => {
-    let check_id = Number(request.params.check_id);
-    const results = await database.get_check_results(check_id);
+app.get('/results/:check_id', utils.runRouteAsync(async (request, response) => {
+    const results = await database.get_check_results(request.params.check_id);
     response.send(JSON.stringify(results));
 }));
 
@@ -62,9 +63,8 @@ app.get('/tasks', utils.runRouteAsync(async (_, response) => {
  * @function
  * @returns sends task with specified id
  */
- app.get('/task/:task_id(\\d+)', utils.runRouteAsync(async (request, response) => {
-    let task_id = Number(request.params.task_id);
-    const task = await database.get_task(task_id);
+ app.get('/task/:task_id', utils.runRouteAsync(async (request, response) => {
+    const task = await database.get_task(request.params.task_id);
     response.send(JSON.stringify(task));
 }))
 
@@ -75,5 +75,5 @@ app.listen(port, () => {
 // TODO: Placeholder, replace with python scrypt executions later 
 function solve_task(task_id, arguments) {
     console.log(`Solving task with arguments: ${arguments}`);
-    return {task_id: task_id, result: 'checked'};
+    return 'checked';
 }
