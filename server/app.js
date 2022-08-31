@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const utils = require('./core/utils');
 const Database = require('./core/database');
+const { spawn } = require('child_process');
 
 const port = 9999;
 
@@ -30,9 +31,8 @@ app.get('/ping', (_, response) => {
 app.post('/check/:task_id', utils.runRouteAsync(async (request, response) => {
     const task_id = request.params.task_id;
     let check_id = await database.create_task_check(task_id);
-    let results = solve_task(task_id, request.body.arguments);
-    database.set_check_results(check_id, results);
     response.send(JSON.stringify({checkId: check_id}))
+    solve_task(check_id, task_id, request.body.arguments);
 }));
 
 /**
@@ -72,8 +72,13 @@ app.listen(port, () => {
     console.log(`App listening at the ${port} port`);
 });
 
-// TODO: Placeholder, replace with python scrypt executions later 
-function solve_task(task_id, arguments) {
-    console.log(`Solving task with arguments: ${arguments}`);
-    return 'checked';
+function solve_task(check_id, task_id, arguments) {
+    console.log(`Run task ${task_id} with arguments: ${arguments}`);
+    const pyChecker = spawn('python3', ['./core/check_solution.py', check_id, task_id, ...arguments]);
+    pyChecker.stdout.on('data', (data) => {
+        console.log(`[PY]: ${check_id}: ${data}`)
+    })
+    pyChecker.stderr.on('data', (data) => {
+        console.log(`[PY ERROR]: ${check_id}: ${data}`)
+    })
 }

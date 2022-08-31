@@ -16,7 +16,6 @@ class Database {
             taskId: ObjectId(task_id),
             result: 'В процессе'
         });
-        console.log(result.insertedId);
         return result.insertedId.toString();
     }
     
@@ -36,17 +35,6 @@ class Database {
         const tasks = this.#database.collection('tasks');
         const task = await tasks.findOne({_id: ObjectId(task_id)});
         return task;
-    }
-
-    //TODO: Implement in grader
-    async set_check_results(check_id, results) {
-        const checks = this.#database.collection('checks');
-        await checks.updateOne(
-            {_id: ObjectId(check_id)}, 
-            {
-                $set: {result: results}
-            }
-        );
     }
 }
 
