@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import Loading from "./Loading";
+import '../styles/Task.css'
 
 /**
  * Component to show single task with form to send solution
@@ -14,7 +15,7 @@ function Task() {
     let [task, error] = useFetch(`http://localhost:9999/task/${params.taskId}`);
 
     if (!task) {
-        return <Loading/>;
+        return <Loading description='Получаем вашу задачу'/>;
     }
 
     const onInputChange = (event) => {
@@ -41,14 +42,17 @@ function Task() {
     return (
         <div>
             <h2> {task.name} </h2>
+            <div> {task.description} </div>
             {task.arguments.map((argument) => {
                 return (
-                    <div>
-                        {argument}
-                        <input key={argument} 
-                            name={argument} 
-                            value={inputValues[argument]} 
-                            onChange={onInputChange}/>
+                    <div class='argumentBox'>
+                        <div class='argumentName'> {argument} </div>
+                        <div class='argumentInput'>
+                            <input key={argument} 
+                                name={argument} 
+                                value={inputValues[argument]} 
+                                onChange={onInputChange}/>
+                        </div>
                     </div>
                 )
             })}

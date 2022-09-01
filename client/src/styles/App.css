@@ -1,3 +1,16 @@
 .App {
+    margin: 20px 80px;
+    font-family: 'Ubuntu';
+}
+
+input {
+    font: inherit;
+}
+
+button {
+    font: inherit;
+}
+
+.header {
     text-align: center;
 }

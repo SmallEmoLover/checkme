@@ -1,0 +1,14 @@
+.argumentBox {
+    display: flex;
+    padding: 10px;
+    background-color: hsla(0, 0%, 0%, 0.1);
+    margin-bottom: 10px;
+}
+
+.argumentName {
+    flex: 1;
+}
+
+.argumentInput {
+    flex: 3;
+}

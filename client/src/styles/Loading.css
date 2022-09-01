@@ -1,14 +1,16 @@
 .Loading {
     height: 100%;
     width: 100%;
-    background-color: hsla(0, 100%, 0%, 0.75);
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+    padding: 20px 0px;
 }
 
 .loadingCircle {
     display: inline-block;
+    padding-bottom: 10px;
 }
 
 .loadingCircle:after {
@@ -18,8 +20,8 @@
     height: 48px;
     margin: 8px;
     border-radius: 50%;
-    border: 6px solid #fff;
-    border-color: #fff transparent;
+    border: 6px solid black;
+    border-color: black transparent;
     animation: circle-spin 1.2s linear infinite;
 }
 

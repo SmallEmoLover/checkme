@@ -10,15 +10,16 @@ function TasksList() {
     let [tasks, error] = useFetch('http://localhost:9999/tasks');
 
     if (!tasks) {
-        return <Loading/>
+        return <Loading description='Получаем список задач'/>
     }
 
     return (
         <div>
-            {tasks && tasks.map((task) => {
+            <h2> Список доступных задач: </h2> 
+            {tasks.map((task, index) => {
                 return (
                     <Link key={task._id} to={`/task/${task._id}`}>
-                        <div> {task.name} </div>
+                        <div> {index + 1}: {task.name} </div>
                     </Link>
                 )
             })}
