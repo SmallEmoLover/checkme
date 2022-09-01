@@ -14,7 +14,7 @@ class Database {
         const checks = this.#database.collection('checks');
         const result = await checks.insertOne({
             taskId: ObjectId(task_id),
-            result: 'В процессе'
+            status: 'В процессе'
         });
         return result.insertedId.toString();
     }

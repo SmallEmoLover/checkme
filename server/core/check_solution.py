@@ -31,7 +31,7 @@ def main():
             result[criterion]['score'] = 0
             result[criterion]['message'] = data['message']
 
-    database.checks.update_one({'_id': ObjectId(check_id)}, {'$set': { 'result': result }})
+    database.checks.update_one({'_id': ObjectId(check_id)}, {'$set': { 'result': result, 'status': 'Проверено' }})
 
     os.chdir('/checks')
     shutil.rmtree(working_dir)
