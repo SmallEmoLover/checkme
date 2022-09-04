@@ -10,6 +10,17 @@ class Database {
         this.#database = this.#client.db('checkme');
     }
 
+    async create_task(name, criterions, answer_format, description) {
+        const tasks = this.#database.collection('tasks');
+        const result = await tasks.insertOne({
+            name: name,
+            criterions: criterions,
+            answer_format: answer_format,
+            description: description
+        });
+        return result.insertedId.toString();
+    }
+
     async create_task_check(task_id) {
         const checks = this.#database.collection('checks');
         const result = await checks.insertOne({

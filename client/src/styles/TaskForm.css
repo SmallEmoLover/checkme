@@ -1,0 +1,17 @@
+textarea {
+    resize: none;
+    width: 100%;
+    height: 300px;
+}
+
+.criterionInputBox {
+    display: flex;
+}
+
+.criterionName {
+    flex: 1;
+}
+
+.criterionFileInput {
+    flex: 4;
+}

@@ -43,14 +43,15 @@ function Task() {
         <div>
             <h2> {task.name} </h2>
             <div> {task.description} </div>
-            {task.arguments.map((argument) => {
+            {task.answer_format.map((argument) => {
                 return (
-                    <div class='argumentBox'>
-                        <div class='argumentName'> {argument} </div>
-                        <div class='argumentInput'>
-                            <input key={argument} 
-                                name={argument} 
-                                value={inputValues[argument]} 
+                    <div key={argument.name} className='argumentBox'>
+                        <div className='argumentName'> {argument.name} </div>
+                        <div className='argumentInput'>
+                            <input key={argument.name} 
+                                name={argument.name} 
+                                value={inputValues[argument.name]}
+                                type={argument.type} 
                                 onChange={onInputChange}/>
                         </div>
                     </div>

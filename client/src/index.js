@@ -6,6 +6,7 @@ import App from './components/App';
 import TasksList from './components/TasksList';
 import Task from './components/Task';
 import Result from './components/Result';
+import TaskForm from './components/TaskForm';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,6 +15,7 @@ root.render(
             <Routes>
                 <Route element={<App/>}>
                     <Route path='/' element={<TasksList/>}/>
+                    <Route path='/task/new' element={<TaskForm/>}/>
                     <Route path='/task/:taskId' element={<Task/>}/>
                     <Route path='/results/:checkId' element={<Result/>}/>
                 </Route>

@@ -3,6 +3,8 @@ const cors = require('cors');
 const utils = require('./core/utils');
 const Database = require('./core/database');
 const { spawn } = require('child_process');
+const formidable = require('formidable');
+const fs = require('node:fs');
 
 const port = 9999;
 
@@ -23,7 +25,7 @@ app.get('/ping', (_, response) => {
 });
 
 /**
- * POST-endpoint to start a task with task_id check with sent arguments
+ * POST-endpoint to start to check task with task_id and sent arguments
  * @name /check/:task_id
  * @function
  * @returns sends created check id to sender
@@ -58,12 +60,60 @@ app.get('/tasks', utils.runRouteAsync(async (_, response) => {
 }))
 
 /**
+ * POST-endpoint to create a new task
+ * @name /task/new
+ * @function
+ * @returns sends created task id to sender
+ */
+app.post('/task/new', utils.runRouteAsync(async (request, response) => {
+    const form = formidable();
+
+    form.parse(request, async (_, fields, files) => {
+        const criterions = JSON.parse(fields['criterions']);
+        const answer_format = JSON.parse(fields['answer_format']);
+        const filenames = [];
+        for (criterion of Object.values(criterions)) {
+            if (criterion.test) {
+                if (files[criterion.test]) {
+                    filenames.push(criterion.test);
+                } else {
+                    response.status(406).send();
+                    return;
+                }
+            }
+        }
+
+        const taskId = await database.create_task(
+            fields['name'],
+            criterions,
+            answer_format,
+            fields['description']
+        );
+        console.log(`Created new task ${taskId}`);
+
+        const filesDir = `/tasks/${taskId}`
+        if (!fs.existsSync(filesDir)){
+            fs.mkdirSync(filesDir);
+        }
+        for (filename of filenames) {
+            const file = files[filename];
+            fs.rename(file.filepath, `${filesDir}/${filename}`, (error) => {
+                console.log(error);
+                response.status(500).send();
+            });
+        }
+
+        response.send(JSON.stringify({taskId: taskId}));
+    })
+}))
+
+/**
  * GET-endpoint to get task with task_id
  * @name /task/:task_id
  * @function
  * @returns sends task with specified id
  */
- app.get('/task/:task_id', utils.runRouteAsync(async (request, response) => {
+app.get('/task/:task_id', utils.runRouteAsync(async (request, response) => {
     const task = await database.get_task(request.params.task_id);
     response.send(JSON.stringify(task));
 }))
