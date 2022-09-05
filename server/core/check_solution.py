@@ -20,9 +20,14 @@ def main():
     task = database.tasks.find_one({'_id': ObjectId(task_id)})
 
     result = {}
-    if 'prepare' in task:
+    criterions = task['criterions']
+    if 'prepare' in criterions:
         execute_file('prepare')
-    for criterion, data in task['criterions'].items():
+        criterions.pop('prepare')
+    for criterion, data in criterions.items():
+        if 'test' not in data.keys():
+            continue
+        os.chdir(working_dir) 
         result[criterion] = {}
         if(execute_file(data['test'])):
             result[criterion]['score'] = data['score']
@@ -33,9 +38,6 @@ def main():
 
     database.checks.update_one({'_id': ObjectId(check_id)}, {'$set': { 'result': result, 'status': 'Проверено' }})
 
-    os.chdir('/checks')
-    shutil.rmtree(working_dir)
-
 def execute_file(filename):
     if filename.endswith('.py'):
         filename = filename[:-3]
@@ -43,7 +45,8 @@ def execute_file(filename):
     test = getattr(module, 'main')
     try:
         return test(sys.argv[3:])
-    except:
+    except Exception as e:
+        print(e)
         return False
 
 if __name__ == '__main__':

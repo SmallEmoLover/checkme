@@ -32,9 +32,29 @@ app.get('/ping', (_, response) => {
  */
 app.post('/check/:task_id', utils.runRouteAsync(async (request, response) => {
     const task_id = request.params.task_id;
-    let check_id = await database.create_task_check(task_id);
-    response.send(JSON.stringify({checkId: check_id}))
-    solve_task(check_id, task_id, request.body.arguments);
+    const form = formidable();
+
+    let check_id = await database.create_task_check(task_id, arguments);
+    response.send(JSON.stringify({checkId: check_id}));
+
+    form.parse(request, async (_, fields, files) => {
+        const arguments = [];
+        let index = 0;
+        while (true) {
+            if (fields[`${index}`]) {
+                arguments.push(fields[`${index}`])
+                index++;
+                continue;
+            };
+            if (files[`${index}`]) {
+                arguments.push(files[`${index}`].filepath)
+                index++;
+                continue;
+            }
+            break;
+        }
+        solve_task(check_id, task_id, arguments);
+    })
 }));
 
 /**
@@ -70,7 +90,7 @@ app.post('/task/new', utils.runRouteAsync(async (request, response) => {
 
     form.parse(request, async (_, fields, files) => {
         const criterions = JSON.parse(fields['criterions']);
-        const answer_format = JSON.parse(fields['answer_format']);
+        const answer_format = JSON.parse(fields['answerFormat']);
         const filenames = [];
         for (criterion of Object.values(criterions)) {
             if (criterion.test) {
@@ -98,8 +118,10 @@ app.post('/task/new', utils.runRouteAsync(async (request, response) => {
         for (filename of filenames) {
             const file = files[filename];
             fs.rename(file.filepath, `${filesDir}/${filename}`, (error) => {
-                console.log(error);
-                response.status(500).send();
+                if (error) {
+                    console.log(error);
+                    response.status(500).send();
+                }
             });
         }
 

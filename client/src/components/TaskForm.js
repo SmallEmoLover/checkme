@@ -32,7 +32,7 @@ function TaskForm() {
         formData.append('name', name);
         formData.append('description', description);
         formData.append('criterions', criterionsJson);
-        formData.append('answer_format', JSON.stringify(
+        formData.append('answerFormat', JSON.stringify(
             answersFormat.map((answer) => {
                 return { name: answersInputs[answer].value, type: answersTypeInputs[answer].value }
             })

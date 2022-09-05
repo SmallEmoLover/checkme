@@ -15,7 +15,7 @@ class Database {
         const result = await tasks.insertOne({
             name: name,
             criterions: criterions,
-            answer_format: answer_format,
+            answerFormat: answer_format,
             description: description
         });
         return result.insertedId.toString();
