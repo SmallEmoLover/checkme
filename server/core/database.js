@@ -47,6 +47,23 @@ class Database {
         const task = await tasks.findOne({_id: ObjectId(task_id)});
         return task;
     }
+
+    async create_user(username, name, surname, password) {
+        const users = this.#database.collection('users');
+        const result = await users.insertOne({
+            username: username,
+            name: name,
+            surname: surname,
+            password: password
+        });
+        return result.insertedId.toString();
+    }
+
+    async find_user(username) {
+        const users = this.#database.collection('users');
+        const user = await users.findOne({username: username});
+        return user;
+    }
 }
 
 module.exports = Database;

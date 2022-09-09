@@ -5,10 +5,14 @@ const Database = require('./core/database');
 const { spawn } = require('child_process');
 const formidable = require('formidable');
 const fs = require('node:fs');
+const argon2 = require('argon2');
+const jwt = require('jsonwebtoken');
 
 const port = 9999;
 
 const database = new Database('mongodb://127.0.0.1:27017/?retryWrites=true&w=majority');
+
+const auth_secret = 'some_test_secret_that_will_be_replaced_with_dotenv_when_we_will_deploy_app';
 
 const app = express();
 app.use(express.json());
@@ -138,6 +142,55 @@ app.post('/task/new', utils.runRouteAsync(async (request, response) => {
 app.get('/task/:task_id', utils.runRouteAsync(async (request, response) => {
     const task = await database.get_task(request.params.task_id);
     response.send(JSON.stringify(task));
+}))
+
+app.post('/sign_up', utils.runRouteAsync(async (request, response) => {
+    if (await database.find_user(request.body.username)) {
+        response.status(401).send(JSON.stringify({error: 'Пользователь с таким логином уже существует'}));
+        return;
+    }
+
+    const password_hash = await argon2.hash(request.body.password);
+
+    await database.create_user(
+        request.body.username,
+        request.body.name,
+        request.body.surname,
+        password_hash
+    );
+
+    const user_data = {
+        username: request.body.username,
+        name: request.body.name,
+        surname: request.body.surname
+    }
+
+    const token = jwt.sign({user_data}, auth_secret);
+
+    response.send(JSON.stringify({...user_data, token: token}));
+}))
+
+app.post('/sign_in', utils.runRouteAsync(async (request, response) => {
+    const user = await database.find_user(request.body.username);
+    if (!user) {
+        response.status(401).send(JSON.stringify({error: 'Пользователя с таким логином не существует'}));
+        return;
+    }
+
+    if (!await argon2.verify(user.password, request.body.password)) {
+        response.status(401).send(JSON.stringify({error: 'Неверный пароль'}));
+        return
+    }
+
+    const user_data = {
+        username: user.username,
+        name: user.name,
+        surname: user.surname
+    }
+
+    const token = jwt.sign({user_data}, auth_secret);
+
+    response.send(JSON.stringify({...user_data, token: token}));
 }))
 
 app.listen(port, () => {
