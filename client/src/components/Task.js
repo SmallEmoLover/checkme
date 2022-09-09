@@ -3,6 +3,7 @@ import useFetch from "../hooks/useFetch";
 import Loading from "./Loading";
 import '../styles/Task.css'
 import useForm from "../hooks/useForm";
+import usePost from "../hooks/usePost";
 
 /**
  * Component to show single task with form to send solution
@@ -13,12 +14,16 @@ function Task() {
     let navigate = useNavigate();
     let [inputsValues, addInput] = useForm();
     let [task, error] = useFetch(`http://localhost:9999/task/${params.taskId}`);
+    let postAnswer = usePost(
+        `http://localhost:9999/check/${params.taskId}`,
+        (data) => navigate(`/results/${data.checkId}`)
+    );
 
     if (!task) {
         return <Loading description='Получаем вашу задачу'/>;
     }
 
-    const sendAnswer = () => {
+    const onSubmit = () => {
         let formData = new FormData();
         task.answerFormat.forEach((answer, index) => {
             if (answer.type === 'file') {
@@ -27,11 +32,7 @@ function Task() {
                 formData.append(index, inputsValues[answer.name]);
             }
         })
-        fetch(`http://localhost:9999/check/${params.taskId}`, {
-                method: 'POST',
-                body: formData
-            }).then((response) => response.json())
-            .then((data) => navigate(`/results/${data.checkId}`));
+        postAnswer.fetch(formData);
     }
 
     const isInputsFilled = () => {
@@ -51,8 +52,8 @@ function Task() {
                         </div>
                     </div>
                 )
-            })}
-            <button disabled={!isInputsFilled()} onClick={sendAnswer}> Отправить </button>
+            })} 
+            <button disabled={!isInputsFilled()} onClick={onSubmit}> Отправить </button>
         </div>
     )
 }

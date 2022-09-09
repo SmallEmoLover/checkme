@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useForm from '../hooks/useForm';
+import usePost from '../hooks/usePost';
 import '../styles/TaskForm.css'
 
 function TaskForm() {
@@ -8,6 +9,10 @@ function TaskForm() {
     let [inputsValues, addInput] = useForm();
     let [criterions, setCriterions] = useState([]);
     let [answersFormat, setAnswersFormat] = useState(['answer1']);
+    let taskPost = usePost(
+        'http://localhost:9999/task/new', 
+        (data) => navigate(`/task/${data.taskId}`)
+    );
 
     useEffect(() => {
         try {
@@ -17,7 +22,7 @@ function TaskForm() {
         }
     }, [inputsValues['criterionsJson']])
 
-    const sendTask = () => {
+    const onSubmit = () => {
         let formData = new FormData();
         formData.append('name', inputsValues['name']);
         formData.append('description', inputsValues['description']);
@@ -30,11 +35,7 @@ function TaskForm() {
         criterions.forEach((criterion) => {
             formData.append(criterion, inputsValues[criterion], criterion);
         });
-        fetch('http://localhost:9999/task/new', {
-            method: 'POST',
-            body: formData,
-        }).then((response) => response.json())
-            .then((data) => navigate(`/task/${data.taskId}`));
+        taskPost.fetch(formData);
     };
 
     const isFormDataReady = () => {
@@ -79,7 +80,7 @@ function TaskForm() {
                     </div>
                 )
             })}
-            <button disabled={!isFormDataReady()} onClick={sendTask}> Отправить </button>
+            <button disabled={!isFormDataReady()} onClick={onSubmit}> Отправить </button>
         </div>
     )
 }
