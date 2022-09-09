@@ -9,6 +9,16 @@ function usePost(url, onSuccess) {
             return;
         }
         setLoading(true);
+        const token = localStorage.getItem('token');
+        if (token) {
+            options = {
+                ...options,
+                headers: {
+                    ...options.headers,
+                    Authentication: `Bearer ${token}`
+                }
+            }
+        }
         fetch(url, {body: body, headers: headers, method: 'POST' })
             .then((response) => response.json())
             .then((json) =>  onSuccess(json))

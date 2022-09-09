@@ -11,6 +11,16 @@ function useFetch(url, options={}) {
     let [error, setError] = useState(null);
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            options = {
+                ...options,
+                headers: {
+                    ...options.headers,
+                    Authentication: `Bearer ${token}`
+                }
+            }
+        }
         fetch(url, options)
             .then((response) => response.json())
             .then((json) => setData(json))
