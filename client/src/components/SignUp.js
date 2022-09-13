@@ -7,7 +7,7 @@ function SignUp(props) {
     const [inputValues, addInput] = useForm();
     const authorization = useContext(AuthContext);
     const postCredentials = usePost(
-        'http://localhost:9999/sign_up',
+        '/sign_up',
         (authData) => {
             authorization.authorize(
                 authData.username,

@@ -3,7 +3,7 @@ import useFetch from "../hooks/useFetch";
 import Loading from "./Loading";
 
 function ResultList() {
-    const [results, error] = useFetch('http://localhost:9999/results');
+    const [results, error] = useFetch('/results');
     const navigate = useNavigate();
 
     if (!results) {

@@ -11,6 +11,7 @@ function useFetch(url, options={}) {
     let [data, setData] = useState(null);
     let [error, setError] = useState(null);
     let authorization = useContext(AuthContext);
+    const server_url = process.env.REACT_APP_SERVER_URL;
 
     useEffect(() => {
         if (authorization.token) {
@@ -22,7 +23,7 @@ function useFetch(url, options={}) {
                 }
             }
         }
-        fetch(url, options)
+        fetch(server_url + url, options)
             .then((response) => response.json())
             .then((json) => setData(json))
             .catch((error) => setError(error));

@@ -7,7 +7,7 @@ function SingIn(props) {
     const [inputValues, addInput] = useForm();
     const authorization = useContext(AuthContext);
     const postCredentials = usePost(
-        'http://localhost:9999/sign_in',
+        '/sign_in',
         (authData) => {
             authorization.authorize(
                 authData.username,

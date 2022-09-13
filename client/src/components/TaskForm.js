@@ -10,7 +10,7 @@ function TaskForm() {
     let [criterions, setCriterions] = useState([]);
     let [answersFormat, setAnswersFormat] = useState(['answer1']);
     let taskPost = usePost(
-        'http://localhost:9999/task/new', 
+        '/task/new', 
         (data) => navigate(`/task/${data.taskId}`)
     );
 

@@ -14,9 +14,9 @@ function Task() {
     let params = useParams();
     let navigate = useNavigate();
     let [inputsValues, addInput] = useForm();
-    let [task, error] = useFetch(`http://localhost:9999/task/${params.taskId}`);
+    let [task, error] = useFetch(`/task/${params.taskId}`);
     let postAnswer = usePost(
-        `http://localhost:9999/check/${params.taskId}`,
+        `/check/${params.taskId}`,
         (data) => navigate(`/results/${data.checkId}`)
     );
 

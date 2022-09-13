@@ -9,6 +9,7 @@
         "mongodb": "^4.9.0",
         "formidable": "^2.0.1",
         "argon2": "^0.29.1",
-        "jsonwebtoken": "^8.5.1"
+        "jsonwebtoken": "^8.5.1",
+        "dotenv": "^16.0.2"
     }
 }

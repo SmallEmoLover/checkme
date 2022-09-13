@@ -5,6 +5,7 @@ function usePost(url, onSuccess) {
     let [error, setError] = useState(null);
     let [loading, setLoading] = useState(false);
     let authorization = useContext(AuthContext);
+    const server_url = process.env.REACT_APP_SERVER_URL;
 
     const doPost = (body, options = {}) => {
         if (loading) {
@@ -20,7 +21,7 @@ function usePost(url, onSuccess) {
                 }
             }
         }
-        fetch(url, { body: body, method: 'POST', ...options })
+        fetch(server_url + url, { body: body, method: 'POST', ...options })
             .then((response) => response.json())
             .then((json) =>  onSuccess(json))
             .catch((error) => setError(error))

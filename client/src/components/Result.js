@@ -9,7 +9,7 @@ import '../styles/Result.css'
  */
 function Result() {
     let params = useParams();
-    let [checkResult, error] = useFetch(`http://localhost:9999/results/${params.checkId}`);
+    let [checkResult, error] = useFetch(`/results/${params.checkId}`);
 
     if (!checkResult) {
         return <Loading description='Получаем ваши результаты'/>

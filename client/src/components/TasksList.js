@@ -7,7 +7,7 @@ import Loading from './Loading';
  * Component to show all available tasks
  */
 function TasksList() {
-    let [tasks, error] = useFetch('http://localhost:9999/tasks');
+    let [tasks, error] = useFetch('/tasks');
     let navigate = useNavigate();
 
     if (!tasks) {

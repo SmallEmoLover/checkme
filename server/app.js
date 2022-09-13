@@ -8,18 +8,17 @@ const formidable = require('formidable');
 const fs = require('node:fs');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const port = 9999;
 
-const database = new Database('mongodb://127.0.0.1:27017/?retryWrites=true&w=majority');
-
-const auth_secret = 'some_test_secret_that_will_be_replaced_with_dotenv_when_we_will_deploy_app';
+const database = new Database(process.env.MONGODB_URL);
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const authorize = add_authorization(database, auth_secret);
+const authorize = add_authorization(database, process.env.AUTHORIZATION_SECRET);
 
 /**
  * GET-endpoint to check server availability
@@ -179,7 +178,7 @@ app.post('/sign_up', utils.runRouteAsync(async (request, response) => {
         surname: request.body.surname
     }
 
-    const token = jwt.sign({user_data}, auth_secret);
+    const token = jwt.sign({user_data}, process.env.AUTHORIZATION_SECRET);
 
     response.send(JSON.stringify({...user_data, token: token}));
 }))
@@ -202,7 +201,7 @@ app.post('/sign_in', utils.runRouteAsync(async (request, response) => {
         surname: user.surname
     }
 
-    const token = jwt.sign({user_data}, auth_secret);
+    const token = jwt.sign({user_data}, process.env.AUTHORIZATION_SECRET);
 
     response.send(JSON.stringify({...user_data, token: token}));
 }))
