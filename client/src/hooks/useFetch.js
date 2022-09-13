@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import AuthContext from "../context/AuthContext";
 
 /**
  * Hook to fetch data from specified url once 
@@ -9,15 +10,15 @@ import { useEffect, useState } from "react";
 function useFetch(url, options={}) {
     let [data, setData] = useState(null);
     let [error, setError] = useState(null);
+    let authorization = useContext(AuthContext);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
+        if (authorization.token) {
             options = {
                 ...options,
                 headers: {
                     ...options.headers,
-                    Authentication: `Bearer ${token}`
+                    Authentication: `Bearer ${authorization.token}`
                 }
             }
         }

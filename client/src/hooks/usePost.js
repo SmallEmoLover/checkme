@@ -1,25 +1,26 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import AuthContext from "../context/AuthContext";
 
 function usePost(url, onSuccess) {
     let [error, setError] = useState(null);
     let [loading, setLoading] = useState(false);
+    let authorization = useContext(AuthContext);
 
-    const doPost = (body, headers = {}) => {
+    const doPost = (body, options = {}) => {
         if (loading) {
             return;
         }
         setLoading(true);
-        const token = localStorage.getItem('token');
-        if (token) {
+        if (authorization.token) {
             options = {
                 ...options,
                 headers: {
                     ...options.headers,
-                    Authentication: `Bearer ${token}`
+                    Authentication: `Bearer ${authorization.token}`
                 }
             }
         }
-        fetch(url, {body: body, headers: headers, method: 'POST' })
+        fetch(url, { body: body, method: 'POST', ...options })
             .then((response) => response.json())
             .then((json) =>  onSuccess(json))
             .catch((error) => setError(error))
