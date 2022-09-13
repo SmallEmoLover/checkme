@@ -1,0 +1,29 @@
+.Header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+}
+
+.Header div {
+    display: inline-block;
+}
+
+.app-title {
+    font-size: 33px;
+    margin-right: 100px;
+    font-weight: bold;
+    user-select: none;
+}
+
+.navigation-link {
+    margin-right: 25px;
+    font-size: 18px;
+    text-decoration: none;
+    color: black;
+}
+
+.signout {
+    margin-left: 15px;
+    font-size: 15px;
+}

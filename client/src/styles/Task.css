@@ -1,14 +1,21 @@
-.argumentBox {
+.answers-list {
+    margin-bottom: 40px;
+}
+
+.answers-box {
     display: flex;
-    padding: 10px;
-    background-color: hsla(0, 0%, 0%, 0.1);
-    margin-bottom: 10px;
+    align-items: center;
 }
 
-.argumentName {
+.answers-name {
     flex: 1;
+    font-weight: bold;
 }
 
-.argumentInput {
+.answers-input {
     flex: 3;
+}
+
+.task-description {
+    margin-bottom: 30px;
 }

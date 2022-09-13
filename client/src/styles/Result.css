@@ -1,0 +1,32 @@
+.criteria-passed {
+    color: #3E8D00;
+}
+
+.criteria-passed::before {
+    content: "+";
+    margin-right: 5px;
+}
+
+.criteria-failed {
+    color: #CE2727;
+}
+
+.criteria-failed::before {
+    content: "–";
+    margin-right: 5px;
+}
+
+.criteria-list {
+    display: flex;
+    margin-top: 10px;
+}
+
+.criteria-message {
+    flex: 4;
+    padding-right: 20px;
+}
+
+.criteria-score {
+    padding-left: 20px;
+    flex: 1;
+}

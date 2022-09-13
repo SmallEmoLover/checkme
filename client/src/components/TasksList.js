@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 import '../styles/TasksList.css'
 import Loading from './Loading';
@@ -8,6 +8,7 @@ import Loading from './Loading';
  */
 function TasksList() {
     let [tasks, error] = useFetch('http://localhost:9999/tasks');
+    let navigate = useNavigate();
 
     if (!tasks) {
         return <Loading description='Получаем список задач'/>
@@ -15,12 +16,12 @@ function TasksList() {
 
     return (
         <div>
-            <h2> Список доступных задач: </h2> 
-            {tasks.map((task, index) => {
+            <h2> Список задач </h2> 
+            {tasks.map((task) => {
                 return (
-                    <Link key={task._id} to={`/task/${task._id}`}>
-                        <div> {index + 1}: {task.name} </div>
-                    </Link>
+                    <div key={task._id} className='block task-item' onClick={() => navigate(`/task/${task._id}`)}>
+                        {task.name}
+                    </div>
                 )
             })}
         </div>

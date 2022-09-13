@@ -4,6 +4,7 @@ import Loading from "./Loading";
 import '../styles/Task.css'
 import useForm from "../hooks/useForm";
 import usePost from "../hooks/usePost";
+import Accordion from "./Accordion";
 
 /**
  * Component to show single task with form to send solution
@@ -42,17 +43,24 @@ function Task() {
     return (
         <div>
             <h2> {task.name} </h2>
-            <div> {task.description} </div>
-            {task.answerFormat.map((argument) => {
-                return (
-                    <div key={argument.name} className='argumentBox'>
-                        <div className='argumentName'> {argument.name} </div>
-                        <div className='argumentInput'>
-                            <input key={argument.name} {...addInput(argument.name, argument.type)} />
+            <Accordion 
+                expanded={true}
+                header={<h3> Описание </h3>}
+                body={<div className="task-description"> {task.description} </div>}
+            />
+            <h3> Ваш ответ </h3>
+            <div className="answers-list">
+                {task.answerFormat.map((argument) => {
+                    return (
+                        <div key={argument.name} className='block answers-box'>
+                            <div className='answers-name'> {argument.name} </div>
+                            <div className='answers-input'>
+                                <input key={argument.name} {...addInput(argument.name, argument.type)} />
+                            </div>
                         </div>
-                    </div>
-                )
-            })} 
+                    )
+                })}
+            </div> 
             <button disabled={!isInputsFilled()} onClick={onSubmit}> Отправить </button>
         </div>
     )

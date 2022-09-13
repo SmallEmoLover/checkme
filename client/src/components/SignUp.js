@@ -3,7 +3,7 @@ import AuthContext from "../context/AuthContext";
 import useForm from "../hooks/useForm";
 import usePost from "../hooks/usePost";
 
-function SignUp() {
+function SignUp(props) {
     const [inputValues, addInput] = useForm();
     const authorization = useContext(AuthContext);
     const postCredentials = usePost(
@@ -26,23 +26,28 @@ function SignUp() {
                 surname: inputValues.surname,
                 password: inputValues.password
             }),
-            { 'Content-Type': 'application/json' }
+            { headers: {'Content-Type': 'application/json' } }
     )}
 
     return(
         <div>
             <h2> Регистрация </h2>
-            <h3> Логин </h3>
+            <p> Логин </p>
             <input {...addInput('username')}/>
-            <h3> Имя </h3>
+            <p> Имя </p>
             <input {...addInput('name')}/>
-            <h3> Фамилия </h3>
+            <p> Фамилия </p>
             <input {...addInput('surname')}/>
-            <h3> Пароль </h3>
+            <p> Пароль </p>
             <input {...addInput('password', 'password')}/>
-            <h3> Подтвердите пароль </h3>
+            <p> Подтвердите пароль </p>
             <input {...addInput('confirmation', 'password')}/>
-            <button disabled={postCredentials.isLoading} onClick={onSingUpClick}> Зарегистрироваться </button>
+            <div className="authorization-buttons-panel">
+                <button disabled={postCredentials.isLoading} onClick={onSingUpClick}> 
+                    Зарегистрироваться 
+                </button>
+                {props.modeToggle}
+            </div>
         </div>
     )
 }

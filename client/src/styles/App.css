@@ -1,6 +1,12 @@
 .App {
-    margin: 20px 80px;
+    padding: 20px 30px;
     font-family: 'Ubuntu';
+    font-style: normal;
+    font-size: 16px;
+}
+
+.app-content {
+    margin: 0px 70px;
 }
 
 input {
@@ -9,8 +15,62 @@ input {
 
 button {
     font: inherit;
+    padding: 6px 40px;
+    border: transparent;
+    border-radius: 10px;
+    color: black;
+    background-color: #7699D4;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
 }
 
-.header {
-    text-align: center;
+button:disabled {
+    background-color: #55709d;
+    color: rgb(66, 66, 66);
+    cursor: not-allowed;
+}
+
+hr {
+    width: 100%;
+	height: 0;
+	border: none;
+	border-top: 2px solid black;
+}
+
+h2 {
+    font-weight: normal;
+    font-size: 36px;
+}
+
+h3 {
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    margin: 20px 0px;
+    font-size: 30px;
+}
+
+.main-page {
+    min-height: 75vh;
+    padding-bottom: 20px;
+}
+
+.block {
+    margin-top: 22px;
+    background: #EBEBEB;
+    padding: 15px;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+}
+
+.react-icons {
+    font-size: 20px;
+}
+
+a {
+    color: inherit;
+}
+
+a:visited {
+    color: inherit;
 }

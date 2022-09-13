@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import Loading from "./Loading";
+import '../styles/Result.css'
 
 /**
  * Component to show single check results
@@ -8,39 +9,52 @@ import Loading from "./Loading";
  */
 function Result() {
     let params = useParams();
-    let [result, error] = useFetch(`http://localhost:9999/results/${params.checkId}`);
+    let [checkResult, error] = useFetch(`http://localhost:9999/results/${params.checkId}`);
 
-    if (!result) {
+    if (!checkResult) {
         return <Loading description='Получаем ваши результаты'/>
     }
 
-    let content = null;
+    const countTotalScore = () => {
+        return Object.values(checkResult.result).reduce((acc, criteria) => {
+            return acc + criteria.score;
+        }, 0)
+    }
 
-    if (result.status === 'В процессе') {
-        content = (
+    if (checkResult.status !== 'Проверено') {
+        return (
             <div>
-                Ваша задача ещё проверяется
+                {checkResult.status}
             </div>
         )
     } else {
-        content = (
+        return (
             <div>
-                <h3> {result.status} </h3>
-                {Object.keys(result.result).map((key) => {
-                    let criteria = result.result[key];
+                <h2> Результат: {countTotalScore()} </h2>
+                <div className="criteria-list">
+                    <div className="criteria-message">
+                        <b> Критерий </b>
+                    </div>
+                    <div className="criteria-score">
+                        <b> Баллы </b>
+                    </div>
+                </div> 
+                {Object.keys(checkResult.result).map((key) => {
+                    let criteria = checkResult.result[key];
                     return (
-                        <div> {key}: {criteria.score}, {criteria.message} </div>
+                        <div key={key} className='criteria-list'> 
+                            <div className={criteria.score > 0 ? 'criteria-message criteria-passed' : 'criteria-failed criteria-message'}>
+                                {criteria.message}
+                            </div>
+                            <div className="criteria-score">
+                                {criteria.score}
+                            </div> 
+                        </div>
                     )
                 })}
             </div>
         )
     }
-    return (
-        <div>
-            <h2> Результаты задачи </h2>
-            {content}
-        </div>
-    )
 }
 
 export default Result;

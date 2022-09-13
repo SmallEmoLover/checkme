@@ -3,7 +3,7 @@ import AuthContext from "../context/AuthContext";
 import useForm from "../hooks/useForm";
 import usePost from "../hooks/usePost";
 
-function SingIn() {
+function SingIn(props) {
     const [inputValues, addInput] = useForm();
     const authorization = useContext(AuthContext);
     const postCredentials = usePost(
@@ -24,17 +24,22 @@ function SingIn() {
                 username: inputValues.username,
                 password: inputValues.password,
             }),
-            { 'Content-Type': 'application/json' }
+            { headers: {'Content-Type': 'application/json'} }
     )}
 
     return(
         <div>
             <h2> Вход </h2>
-            <h3> Логин </h3>
+            <p> Логин </p>
             <input {...addInput('username')}/>
-            <h3> Пароль </h3>
+            <p> Пароль </p>
             <input {...addInput('password', 'password')}/>
-            <button disabled={postCredentials.isLoading} onClick={onSingInClick}> Войти </button>
+            <div className="authorization-buttons-panel">
+                <button disabled={postCredentials.isLoading} onClick={onSingInClick}>
+                    Войти 
+                </button>
+                {props.modeToggle}
+            </div>
         </div>
     )
 }

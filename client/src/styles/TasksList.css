@@ -1,0 +1,8 @@
+.task-item {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.task-item:hover {
+    outline: 1px solid black;
+}

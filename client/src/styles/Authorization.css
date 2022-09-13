@@ -1,0 +1,36 @@
+.Authorization {
+    display: flex;
+    justify-content: center;
+}
+
+.authorization-card {
+    width: 375px;
+    height: max-content;
+}
+
+.authorization-card p {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.authorization-card h2 {
+    text-align: center;
+}
+
+.authorization-card input {
+    background-color: #D9D9D9;
+    width: 100%;
+    height: 25px;
+}
+
+.authorization-buttons-panel {
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.authorization-buttons-panel a{
+    text-decoration: underline;
+    cursor: pointer;
+}
