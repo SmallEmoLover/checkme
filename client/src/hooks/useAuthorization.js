@@ -23,7 +23,8 @@ function useAuthorization() {
     return { 
         username: username, 
         name: name, 
-        surname: surname, 
+        surname: surname,
+        token: token, 
         signOut: signOut, 
         authorize: authorize 
     };

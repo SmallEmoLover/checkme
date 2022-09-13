@@ -11,7 +11,7 @@ function App() {
     let authorization = useAuthorization();
     let content;
 
-    if (!authorization.username) {
+    if (!authorization.token) {
         content = <Authorization/>
     } else {
         content = (
