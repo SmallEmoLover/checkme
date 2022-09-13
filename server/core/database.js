@@ -1,5 +1,4 @@
-const { MongoClient } = require("mongodb");
-var ObjectId = require('mongodb').ObjectId;
+const { MongoClient, ObjectId } = require("mongodb");
 
 class Database {
     #client;
@@ -21,10 +20,12 @@ class Database {
         return result.insertedId.toString();
     }
 
-    async create_task_check(task_id) {
+    async create_task_check(task_id, user_id) {
         const checks = this.#database.collection('checks');
         const result = await checks.insertOne({
             taskId: ObjectId(task_id),
+            userId: ObjectId(user_id),
+            date: new Date(),
             status: 'В процессе'
         });
         return result.insertedId.toString();
@@ -63,6 +64,21 @@ class Database {
         const users = this.#database.collection('users');
         const user = await users.findOne({username: username});
         return user;
+    }
+
+    async get_user_checks(user_id) {
+        const checks = this.#database.collection('checks');
+        const result = await checks.aggregate([
+            { $match: { userId: ObjectId(user_id) } },
+            { $lookup: {
+                from: "tasks",
+                localField: "taskId",
+                foreignField: "_id",
+                as: "task"
+            }},
+            { $unwind: "$task" }
+        ]).toArray();
+        return result;
     }
 }
 

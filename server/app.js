@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const utils = require('./core/utils');
+const { add_authorization } = require('./middleware/auth_middleware');
 const Database = require('./core/database');
 const { spawn } = require('child_process');
 const formidable = require('formidable');
@@ -18,6 +19,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+const authorize = add_authorization(database, auth_secret);
+
 /**
  * GET-endpoint to check server availability
  * @name /ping
@@ -34,11 +37,11 @@ app.get('/ping', (_, response) => {
  * @function
  * @returns sends created check id to sender
  */
-app.post('/check/:task_id', utils.runRouteAsync(async (request, response) => {
+app.post('/check/:task_id', authorize, utils.runRouteAsync(async (request, response) => {
     const task_id = request.params.task_id;
     const form = formidable();
 
-    let check_id = await database.create_task_check(task_id, arguments);
+    let check_id = await database.create_task_check(task_id, request.auth_user._id);
     response.send(JSON.stringify({checkId: check_id}));
 
     form.parse(request, async (_, fields, files) => {
@@ -67,7 +70,7 @@ app.post('/check/:task_id', utils.runRouteAsync(async (request, response) => {
  * @function
  * @returns sends check results
  */
-app.get('/results/:check_id', utils.runRouteAsync(async (request, response) => {
+app.get('/results/:check_id', authorize, utils.runRouteAsync(async (request, response) => {
     const results = await database.get_check_results(request.params.check_id);
     response.send(JSON.stringify(results));
 }));
@@ -78,7 +81,7 @@ app.get('/results/:check_id', utils.runRouteAsync(async (request, response) => {
  * @function
  * @returns sends list with tasks
  */
-app.get('/tasks', utils.runRouteAsync(async (_, response) => {
+app.get('/tasks', authorize, utils.runRouteAsync(async (request, response) => {
     const tasks = await database.get_all_tasks();
     response.send(JSON.stringify(tasks));
 }))
@@ -89,7 +92,7 @@ app.get('/tasks', utils.runRouteAsync(async (_, response) => {
  * @function
  * @returns sends created task id to sender
  */
-app.post('/task/new', utils.runRouteAsync(async (request, response) => {
+app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) => {
     const form = formidable();
 
     form.parse(request, async (_, fields, files) => {
@@ -134,12 +137,23 @@ app.post('/task/new', utils.runRouteAsync(async (request, response) => {
 }))
 
 /**
+ * GET-endpoint to get all checks for specified user
+ * @name /results
+ * @function
+ * @returns sends all checks to specified user
+ */
+ app.get('/results', authorize, utils.runRouteAsync(async (request, response) => {
+    const results = await database.get_user_checks(request.auth_user._id);
+    response.send(JSON.stringify(results));
+}))
+
+/**
  * GET-endpoint to get task with task_id
  * @name /task/:task_id
  * @function
  * @returns sends task with specified id
  */
-app.get('/task/:task_id', utils.runRouteAsync(async (request, response) => {
+app.get('/task/:task_id', authorize, utils.runRouteAsync(async (request, response) => {
     const task = await database.get_task(request.params.task_id);
     response.send(JSON.stringify(task));
 }))

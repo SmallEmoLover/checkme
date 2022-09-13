@@ -12,7 +12,7 @@ function Header() {
                 <a className='navigation-link' href='/'>
                     Список задач
                 </a>
-                <a className='navigation-link' href='/'>
+                <a className='navigation-link' href='/results/me'>
                     Мои решения
                 </a>
             </div>
