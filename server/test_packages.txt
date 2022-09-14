@@ -1,0 +1,3 @@
+openjdk-11-jdk-headless
+python3
+pip
