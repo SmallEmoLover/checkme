@@ -5,6 +5,10 @@ import usePost from '../hooks/usePost';
 import '../styles/TaskForm.css'
 import AdminRequired from './AdminRequired';
 
+/**
+ * Component-form to send new task to server.
+ * Available only for admin user
+ */
 function TaskForm() {
     let navigate = useNavigate();
     let [inputsValues, addInput] = useForm();

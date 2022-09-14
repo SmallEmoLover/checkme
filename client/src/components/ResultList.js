@@ -2,6 +2,9 @@ import { useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import Loading from "./Loading";
 
+/**
+ * Component with all check results made by currently logged user
+ */
 function ResultList() {
     const [results, error] = useFetch('/results');
     const navigate = useNavigate();

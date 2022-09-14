@@ -3,6 +3,9 @@ import SignUp from "./SignUp";
 import SingIn from "./SingIn";
 import '../styles/Authorization.css'
 
+/**
+ * Authorization component with sign in and sing up forms rendering
+ */
 function Authorization() {
     const [isUserSigningIn, setUserSigningIn] = useState(false);
 

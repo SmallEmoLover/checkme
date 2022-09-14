@@ -3,6 +3,11 @@ import AuthContext from "../context/AuthContext";
 import useForm from "../hooks/useForm";
 import usePost from "../hooks/usePost";
 
+/**
+ * Component with sing in form
+ * @param {*} props - expects modeToggle component with button to 
+ * toggle between sing form up and sing in form
+ */
 function SingIn(props) {
     const [inputValues, addInput] = useForm();
     const authorization = useContext(AuthContext);

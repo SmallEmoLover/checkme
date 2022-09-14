@@ -1,5 +1,12 @@
 import { useRef, useState } from "react"
 
+/**
+ * Hook to managing form at the page
+ * @returns [inputValues, addInput]
+ * inputValues - object with all inputs values accessible by it name
+ * 
+ * addInput(name, type='text', initial='') - add new input to the hook.
+ */
 function useForm() {
     const inputs = useRef({});
     const [inputsValues, setInputsValues] = useState({});

@@ -3,6 +3,9 @@ import AuthContext from '../context/AuthContext';
 import '../styles/Header.css';
 import AdminRequired from './AdminRequired';
 
+/**
+ * Header component with logo and navigation
+ */
 function Header() {
     let authorization = useContext(AuthContext);
 

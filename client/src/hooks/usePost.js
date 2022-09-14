@@ -1,6 +1,12 @@
 import { useContext, useState } from "react";
 import AuthContext from "../context/AuthContext";
 
+/**
+ * Hook to managing post requests
+ * @param {*} url - request url
+ * @param {*} onSuccess - callback with actions to perform after succesfull data retrieving
+ * @returns {error, loading, doPost}
+ */
 function usePost(url, onSuccess) {
     let [error, setError] = useState(null);
     let [loading, setLoading] = useState(false);

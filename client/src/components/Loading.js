@@ -11,7 +11,7 @@ function Loading(props) {
     } else {
         return (
             <div className='Loading'>
-                <div className='loadingCircle'/>
+                <div className='loading-circle'/>
                 <div> {props.description} </div>
             </div>
         )

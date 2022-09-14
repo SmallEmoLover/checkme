@@ -1,5 +1,8 @@
 import '../styles/Footer.css'
 
+/**
+ * Footer component with contact info
+ */
 function Footer() {
     return (
         <div className="Footer">

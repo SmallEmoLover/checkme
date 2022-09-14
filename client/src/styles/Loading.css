@@ -8,12 +8,12 @@
     padding: 20px 0px;
 }
 
-.loadingCircle {
+.loading-circle {
     display: inline-block;
     padding-bottom: 10px;
 }
 
-.loadingCircle:after {
+.loading-circle:after {
     content: "";
     display: block;
     width: 48px;

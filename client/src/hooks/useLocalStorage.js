@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 
+/**
+ * Hook to storing localStorage values
+ * @param {*} item - name of the localStorage item
+ * @returns [localStorageItem, setLocalStorageItem]
+ */
 function useLocalStorage(item) {
     let [localStorageItem, setLocalStorageItem] = useState(localStorage.getItem(item));
 
