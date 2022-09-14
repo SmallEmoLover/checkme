@@ -6,6 +6,7 @@ const Database = require('./core/database');
 const { spawn } = require('child_process');
 const formidable = require('formidable');
 const fs = require('node:fs');
+const mv = require('mv');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -123,7 +124,7 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
         }
         for (filename of filenames) {
             const file = files[filename];
-            fs.rename(file.filepath, `${filesDir}/${filename}`, (error) => {
+            mv(file.filepath, `${filesDir}/${filename}`, (error) => {
                 if (error) {
                     console.log(error);
                     response.status(500).send();
