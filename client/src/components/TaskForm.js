@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import useForm from '../hooks/useForm';
 import usePost from '../hooks/usePost';
 import '../styles/TaskForm.css'
+import AdminRequired from './AdminRequired';
 
 function TaskForm() {
     let navigate = useNavigate();
@@ -44,7 +45,7 @@ function TaskForm() {
     };
 
     return (
-        <div>
+        <AdminRequired>
             <h2> Создание задачи </h2>
             <h3> Название </h3>
             <input {...addInput('name')}/>
@@ -81,7 +82,7 @@ function TaskForm() {
                 )
             })}
             <button disabled={!isFormDataReady()} onClick={onSubmit}> Отправить </button>
-        </div>
+        </AdminRequired>
     )
 }
 

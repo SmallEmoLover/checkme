@@ -1,6 +1,7 @@
 import { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 import '../styles/Header.css';
+import AdminRequired from './AdminRequired';
 
 function Header() {
     let authorization = useContext(AuthContext);
@@ -15,6 +16,11 @@ function Header() {
                 <a className='navigation-link' href='/results/me'>
                     Мои решения
                 </a>
+                <AdminRequired>
+                    <a className='navigation-link' href='/task/new'>
+                        Создать задачу
+                    </a>
+                </AdminRequired>
             </div>
             <div className="user">
                 {authorization.username}
