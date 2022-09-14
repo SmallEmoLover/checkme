@@ -1,4 +1,4 @@
-version: "1"
+version: "3.2"
 services:
   client:
     build: ./client/
@@ -12,6 +12,8 @@ services:
       - "3000:9999"
     links:
       - "mongodb:db"
+    depends_on:
+      - mongodb
   mongodb:
     image: mongo
     command: -dbpath /dbdata
