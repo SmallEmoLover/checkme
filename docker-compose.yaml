@@ -3,13 +3,13 @@ services:
   client:
     build: ./client/
     ports: 
-      - "99:80"
+      - "80:80"
     depends_on:
       - server
   server:
     build: ./server/
     ports: 
-      - "3000:9999"
+      - "9999:9999"
     links:
       - "mongodb:db"
     depends_on:
