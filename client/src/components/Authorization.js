@@ -19,7 +19,6 @@ function Authorization() {
         <div className="Authorization">
             <div className="authorization-card">
                 {isUserSigningIn ? <SignUp modeToggle={toggleButton}/> : <SingIn modeToggle={toggleButton}/>}
-
             </div>
         </div>
     )

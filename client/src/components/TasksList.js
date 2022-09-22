@@ -7,17 +7,17 @@ import Loading from './Loading';
  * Component to show all available tasks
  */
 function TasksList() {
-    let [tasks, error] = useFetch('/tasks');
+    let fetchTasks = useFetch('/tasks');
     let navigate = useNavigate();
 
-    if (!tasks) {
+    if (!fetchTasks.data) {
         return <Loading description='Получаем список задач'/>
     }
 
     return (
         <div>
             <h2> Список задач </h2> 
-            {tasks.map((task) => {
+            {fetchTasks.data.map((task) => {
                 return (
                     <div key={task._id} className='block task-item' onClick={() => navigate(`/task/${task._id}`)}>
                         {task.name}

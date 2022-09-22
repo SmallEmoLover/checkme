@@ -14,19 +14,19 @@ function Task() {
     let params = useParams();
     let navigate = useNavigate();
     let [inputsValues, addInput] = useForm();
-    let [task, error] = useFetch(`/task/${params.taskId}`);
+    let fetchTask = useFetch(`/task/${params.taskId}`);
     let postAnswer = usePost(
         `/check/${params.taskId}`,
         (data) => navigate(`/results/${data.checkId}`)
     );
 
-    if (!task) {
+    if (!fetchTask.data) {
         return <Loading description='Получаем вашу задачу'/>;
     }
 
     const onSubmit = () => {
         let formData = new FormData();
-        task.answerFormat.forEach((answer, index) => {
+        fetchTask.data.answerFormat.forEach((answer, index) => {
             if (answer.type === 'file') {
                 formData.append(index, inputsValues[answer.name], index)
             } else {
@@ -42,15 +42,15 @@ function Task() {
 
     return (
         <div>
-            <h2> {task.name} </h2>
+            <h2> {fetchTask.data.name} </h2>
             <Accordion 
                 expanded={true}
                 header={<h3> Описание </h3>}
-                body={<div className="task-description"> {task.description} </div>}
+                body={<div className="task-description"> {fetchTask.data.description} </div>}
             />
             <h3> Ваш ответ </h3>
             <div className="answers-list">
-                {task.answerFormat.map((argument) => {
+                {fetchTask.data.answerFormat.map((argument) => {
                     return (
                         <div key={argument.name} className='block answers-box'>
                             <div className='answers-name'> {argument.name} </div>

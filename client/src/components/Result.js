@@ -9,22 +9,22 @@ import '../styles/Result.css'
  */
 function Result() {
     let params = useParams();
-    let [checkResult, error] = useFetch(`/results/${params.checkId}`);
+    let fetchCheck = useFetch(`/results/${params.checkId}`);
 
-    if (!checkResult) {
+    if (!fetchCheck.data) {
         return <Loading description='Получаем ваши результаты'/>
     }
 
     const countTotalScore = () => {
-        return Object.values(checkResult.result).reduce((acc, criteria) => {
+        return Object.values(fetchCheck.data.result).reduce((acc, criteria) => {
             return acc + criteria.score;
         }, 0)
     }
 
-    if (checkResult.status !== 'Проверено') {
+    if (fetchCheck.data.status !== 'Проверено') {
         return (
             <div>
-                {checkResult.status}
+                {fetchCheck.data.status}
             </div>
         )
     } else {
@@ -39,8 +39,8 @@ function Result() {
                         <b> Баллы </b>
                     </div>
                 </div> 
-                {Object.keys(checkResult.result).map((key) => {
-                    let criteria = checkResult.result[key];
+                {Object.keys(fetchCheck.data.result).map((key) => {
+                    let criteria = fetchCheck.data.result[key];
                     return (
                         <div key={key} className='criteria-list'> 
                             <div className={criteria.score > 0 ? 'criteria-message criteria-passed' : 'criteria-failed criteria-message'}>
