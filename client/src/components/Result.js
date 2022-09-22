@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import Loading from "./Loading";
 import '../styles/Result.css'
+import { useEffect } from "react";
 
 /**
  * Component to show single check results
@@ -10,6 +11,12 @@ import '../styles/Result.css'
 function Result() {
     let params = useParams();
     let fetchCheck = useFetch(`/results/${params.checkId}`);
+
+    useEffect(() => {
+        if (fetchCheck.data && fetchCheck.data.status !== 'Проверено') {
+            setTimeout(() => fetchCheck.fetch(), 5000)
+        }
+    }, [fetchCheck.data])
 
     if (!fetchCheck.data) {
         return <Loading description='Получаем ваши результаты'/>
