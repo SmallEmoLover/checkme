@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import '../styles/Header.css';
 import AdminRequired from './AdminRequired';
@@ -13,16 +14,16 @@ function Header() {
         <div className="Header">
             <div className="navigation">
                 <div className="app-title"> Checkme </div>
-                <a className='navigation-link' href='/'>
+                <Link className='navigation-link' to='/'>
                     Список задач
-                </a>
-                <a className='navigation-link' href='/results/me'>
+                </Link>
+                <Link className='navigation-link' to='/results/me'>
                     Мои решения
-                </a>
+                </Link>
                 <AdminRequired>
-                    <a className='navigation-link' href='/task/new'>
+                    <Link className='navigation-link' to='/task/new'>
                         Создать задачу
-                    </a>
+                    </Link>
                 </AdminRequired>
             </div>
             <div className="user">
