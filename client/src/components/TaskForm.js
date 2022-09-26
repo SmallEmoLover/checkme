@@ -40,6 +40,9 @@ function TaskForm() {
         criterions.forEach((criterion) => {
             formData.append(criterion, inputsValues[criterion], criterion);
         });
+        if (inputsValues['additional_files']) {
+            formData.append('additional', inputsValues['additional_files'], 'additional_files.zip')
+        }
         taskPost.fetch(formData);
     };
 
@@ -85,6 +88,10 @@ function TaskForm() {
                     </div>
                 )
             })}
+            <h3> Дополнительные файлы (архив .zip) </h3>
+            <div>
+                <input {...addInput('additional_files', 'file')}/>
+            </div>
             <button disabled={!isFormDataReady()} onClick={onSubmit}> Отправить </button>
         </AdminRequired>
     )

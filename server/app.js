@@ -118,18 +118,24 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
         );
         console.log(`Created new task ${taskId}`);
 
+        const onFileMoveError = (error) => {
+            if (error) {
+                console.log(error);
+                response.status(500).send();
+            }
+        };
+
         const filesDir = `/tasks/${taskId}`
         if (!fs.existsSync(filesDir)){
             fs.mkdirSync(filesDir);
         }
         for (filename of filenames) {
             const file = files[filename];
-            mv(file.filepath, `${filesDir}/${filename}`, (error) => {
-                if (error) {
-                    console.log(error);
-                    response.status(500).send();
-                }
-            });
+            mv(file.filepath, `${filesDir}/${filename}`, onFileMoveError);
+        }
+        const additional_archive = files['additional'];
+        if (additional_archive) {
+            mv(additional_archive.filepath, `${filesDir}/additional.zip`, onFileMoveError);
         }
 
         response.send(JSON.stringify({taskId: taskId}));

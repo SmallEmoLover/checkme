@@ -10,7 +10,9 @@ def main():
     load_dotenv(find_dotenv())
 
     check_id, task_id = sys.argv[1:3]
-    sys.path.append(os.path.join('/tasks', task_id))
+    task_dir = os.path.join('/tasks', task_id)
+    sys.path.append(task_dir)
+
     working_dir = os.path.join('/checks', check_id)
     os.mkdir(working_dir)
     os.chdir(working_dir)
@@ -18,6 +20,8 @@ def main():
     client = pymongo.MongoClient(os.environ.get("MONGODB_URL"))
     database = client.checkme
     task = database.tasks.find_one({'_id': ObjectId(task_id)})
+
+    os.system(f'unzip -o {os.path.join(task_dir, "additional.zip")}')
 
     result = {}
     criterions = task['criterions']
@@ -39,7 +43,11 @@ def main():
     database.checks.update_one({'_id': ObjectId(check_id)}, {'$set': { 'result': result, 'status': 'Проверено' }})
 
 def execute_file(filename) -> bool:
-    module = importlib.import_module(filename.rstrip('.py'))
+    # rstrip will not work here
+    # example: check_dependency.py will be cropped to check_dependenc
+    if filename.endswith('.py'):
+        filename = filename[:-3]
+    module = importlib.import_module(filename)
     test = getattr(module, 'main')
     try:
         return test(sys.argv[3:])
