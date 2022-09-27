@@ -5,7 +5,7 @@ import '../styles/Task.css'
 import useForm from "../hooks/useForm";
 import usePost from "../hooks/usePost";
 import Accordion from "./Accordion";
-import MarkdownIt from "markdown-it";
+import Markdown from "./Markdown";
 
 /**
  * Component to show single task with form to send solution
@@ -24,9 +24,6 @@ function Task() {
     if (!fetchTask.data) {
         return <Loading description='Получаем вашу задачу'/>;
     }
-
-    const markdown = new MarkdownIt();
-    const description = markdown.render(fetchTask.data.description);
 
     const onSubmit = () => {
         let formData = new FormData();
@@ -50,7 +47,7 @@ function Task() {
             <Accordion 
                 expanded={true}
                 header={<h3> Описание </h3>}
-                body={<div className="task-description" dangerouslySetInnerHTML={{__html: description}}/>}
+                body={<Markdown text={fetchTask.data.description}/>}
             />
             <h3> Ваш ответ </h3>
             <div className="answers-list">

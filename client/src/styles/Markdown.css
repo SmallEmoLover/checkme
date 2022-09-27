@@ -1,0 +1,70 @@
+.markdown h1 {
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+.markdown h2 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+.markdown h3 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.markdown hr {
+    height: 15px;
+}
+
+.markdown blockquote {
+    border-left: solid 5px rgba(0, 0, 0, 0.2);
+    margin: 0;
+    margin-bottom: 10px;
+    padding: 5px 30px;
+}
+
+.markdown blockquote:hover {
+    border-color: rgba(0, 0, 0, 0.7);
+}
+
+.markdown code {
+    background-color: #e7ecf1;
+    padding: 0px 6px;
+    border-radius: 4px;
+    font-family: 'Ubuntu Mono';
+    font-size: 18px;
+}
+
+.markdown pre {
+    background-color: #EBEBEB;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.markdown pre > code {
+    background-color: #EBEBEB;
+    padding: 0px;
+    color: inherit;
+}
+
+
+.markdown img {
+    max-height: 50%;
+    max-width: 50%;
+}
+
+.markdown td {
+    padding: 8px 30px;
+}
+
+.markdown tbody tr:nth-child(odd) {
+    background-color: #EBEBEB;
+}
+
+.markdown tbody tr:nth-child(even) {
+    background-color: #fbfbfb;
+}
