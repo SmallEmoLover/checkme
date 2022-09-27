@@ -57,7 +57,7 @@ function TaskForm() {
             <h3> Название </h3>
             <input {...addInput('name')}/>
             <h3> Описание </h3>
-            <input {...addInput('description')}/>
+            <textarea {...addInput('description', null)}/>
             <h3> Формат ответа </h3>
             {answersFormat.map((answer) => {
                 return (

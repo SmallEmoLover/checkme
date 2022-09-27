@@ -18,4 +18,5 @@
 
 .task-description {
     margin-bottom: 30px;
+    white-space: pre-line;
 }
