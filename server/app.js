@@ -42,7 +42,6 @@ app.post('/check/:task_id', authorize, utils.runRouteAsync(async (request, respo
     const form = formidable();
 
     let check_id = await database.create_task_check(task_id, request.auth_user._id);
-    response.send(JSON.stringify({checkId: check_id}));
 
     form.parse(request, async (_, fields, files) => {
         const arguments = [];
@@ -60,6 +59,7 @@ app.post('/check/:task_id', authorize, utils.runRouteAsync(async (request, respo
             }
             break;
         }
+        response.send(JSON.stringify({checkId: check_id}));
         solve_task(check_id, task_id, arguments);
     })
 }));
