@@ -9,6 +9,7 @@ const fs = require('node:fs');
 const mv = require('mv');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+const { Db } = require('mongodb');
 require('dotenv').config();
 
 const port = 9999;
@@ -162,6 +163,22 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
 app.get('/task/:task_id', authorize, utils.runRouteAsync(async (request, response) => {
     const task = await database.get_task(request.params.task_id);
     response.send(JSON.stringify(task));
+}))
+
+/**
+ * DELETE-endpoint to delete task with task_id
+ * @name /task/:task_id
+ * @function
+ * @returns deletion status
+ */
+app.delete('/task/:task_id', authorize, utils.runRouteAsync(async (request, response) => {
+    if (request.auth_user.username != 'admin') {
+        response.status(401).send('У вас нет прав на это действие');
+        return;
+    }
+    
+    await database.delete_task(request.params.task_id);
+    response.send(JSON.stringify({status: 'complete'}));
 }))
 
 app.post('/sign_up', utils.runRouteAsync(async (request, response) => {

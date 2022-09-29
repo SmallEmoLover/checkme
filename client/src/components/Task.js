@@ -6,6 +6,7 @@ import useForm from "../hooks/useForm";
 import usePost from "../hooks/usePost";
 import Accordion from "./Accordion";
 import Markdown from "./Markdown";
+import AdminRequired from './AdminRequired';
 
 /**
  * Component to show single task with form to send solution
@@ -20,6 +21,10 @@ function Task() {
         `/check/${params.taskId}`,
         (data) => navigate(`/results/${data.checkId}`)
     );
+    let deleteTask = usePost(
+        `/task/${params.taskId}`,
+        (_) => navigate('/')
+    )
 
     if (!fetchTask.data) {
         return <Loading description='Получаем вашу задачу'/>;
@@ -63,6 +68,11 @@ function Task() {
                 })}
             </div> 
             <button disabled={!isInputsFilled()} onClick={onSubmit}> Отправить </button>
+            <AdminRequired>
+                <button className="warning-button" onClick={() => deleteTask.fetch({}, {method: 'DELETE'})}> 
+                    Удалить задачу
+                </button>
+            </AdminRequired>
         </div>
     )
 }

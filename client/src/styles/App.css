@@ -14,7 +14,9 @@ input {
 }
 
 button {
+    margin: 20px 0px;
     font: inherit;
+    display: block;
     padding: 6px 40px;
     border: transparent;
     border-radius: 10px;
@@ -28,6 +30,10 @@ button:disabled {
     background-color: #55709d;
     color: rgb(66, 66, 66);
     cursor: not-allowed;
+}
+
+.warning-button {
+    background-color: #e62d2d;
 }
 
 hr {

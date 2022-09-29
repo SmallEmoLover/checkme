@@ -49,6 +49,14 @@ class Database {
         return task;
     }
 
+    async delete_task(task_id) {
+        const tasks = this.#database.collection('tasks');
+        const checks = this.#database.collection('checks');
+        let id = ObjectId(task_id);
+        await tasks.deleteOne({ _id: id });
+        await checks.deleteMany({ taskId: id })
+    }
+
     async create_user(username, name, surname, password) {
         const users = this.#database.collection('users');
         const result = await users.insertOne({
