@@ -4,6 +4,7 @@ import useForm from '../hooks/useForm';
 import usePost from '../hooks/usePost';
 import '../styles/TaskForm.css'
 import AdminRequired from './AdminRequired';
+import ErrorMessage from './ErrorMessage';
 
 /**
  * Component-form to send new task to server.
@@ -93,6 +94,7 @@ function TaskForm() {
                 <input {...addInput('additional_files', 'file')}/>
             </div>
             <button disabled={!isFormDataReady()} onClick={onSubmit}> Отправить </button>
+            <ErrorMessage message={taskPost.error}/>
         </AdminRequired>
     )
 }

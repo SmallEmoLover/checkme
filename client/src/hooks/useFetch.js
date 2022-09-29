@@ -25,9 +25,25 @@ function useFetch(url, options={}) {
             }
         }
         fetch(server_url + url, options)
-            .then((response) => response.json())
-            .then((json) => setData(json))
-            .catch((error) => setError(error));
+            .then((response) => {
+                return response.json()
+                    .then((json) => {
+                        return {
+                            json: json, 
+                            ok: response.ok
+                        }
+                    }) 
+            })
+            .then((parsedResponse) => { 
+                if (!parsedResponse.ok) {
+                    throw parsedResponse.json;
+                } else {
+                    setData(parsedResponse.json) 
+                }
+            })
+            .catch((errorJson) => {
+                setError(errorJson.error || 'Ошибка соединения с сервером');
+            });
     };
 
     useEffect(doFetch, []);

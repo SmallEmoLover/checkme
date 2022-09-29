@@ -7,6 +7,7 @@ import usePost from "../hooks/usePost";
 import Accordion from "./Accordion";
 import Markdown from "./Markdown";
 import AdminRequired from './AdminRequired';
+import ErrorMessage from "./ErrorMessage";
 
 /**
  * Component to show single task with form to send solution
@@ -25,6 +26,10 @@ function Task() {
         `/task/${params.taskId}`,
         (_) => navigate('/')
     )
+
+    if (fetchTask.error) {
+        return <ErrorMessage message={fetchTask.error}/>
+    }
 
     if (!fetchTask.data) {
         return <Loading description='Получаем вашу задачу'/>;
@@ -73,6 +78,7 @@ function Task() {
                     Удалить задачу
                 </button>
             </AdminRequired>
+            <ErrorMessage message={deleteTask.error || postAnswer.error} />
         </div>
     )
 }

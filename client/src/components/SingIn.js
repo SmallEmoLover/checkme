@@ -2,6 +2,7 @@ import { useContext } from "react";
 import AuthContext from "../context/AuthContext";
 import useForm from "../hooks/useForm";
 import usePost from "../hooks/usePost";
+import ErrorMessage from "./ErrorMessage";
 
 /**
  * Component with sing in form
@@ -35,6 +36,7 @@ function SingIn(props) {
     return(
         <div>
             <h2> Вход </h2>
+            <ErrorMessage message={postCredentials.error}/>
             <p> Логин </p>
             <input {...addInput('username')}/>
             <p> Пароль </p>

@@ -10,6 +10,10 @@ function TasksList() {
     let fetchTasks = useFetch('/tasks');
     let navigate = useNavigate();
 
+    if (fetchTasks.error) {
+        return <ErrorMessage message={fetchTasks.error}/>
+    }
+
     if (!fetchTasks.data) {
         return <Loading description='Получаем список задач'/>
     }

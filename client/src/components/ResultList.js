@@ -9,6 +9,10 @@ function ResultList() {
     const fetchResults = useFetch('/results');
     const navigate = useNavigate();
 
+    if (fetchResults.error) {
+        return <ErrorMessage message={fetchResults.error}/>
+    }
+
     if (!fetchResults.data) {
         return <Loading description='Получаем ваши решения'/>
     }

@@ -3,6 +3,7 @@ import useFetch from "../hooks/useFetch";
 import Loading from "./Loading";
 import '../styles/Result.css'
 import { useEffect } from "react";
+import ErrorMessage from "./ErrorMessage";
 
 /**
  * Component to show single check results
@@ -13,10 +14,14 @@ function Result() {
     let fetchCheck = useFetch(`/results/${params.checkId}`);
 
     useEffect(() => {
-        if (fetchCheck.data && fetchCheck.data.status !== 'Проверено') {
+        if (fetchCheck.data && fetchCheck.data.status === 'В процессе') {
             setTimeout(() => fetchCheck.fetch(), 5000)
         }
     }, [fetchCheck.data])
+
+    if (fetchCheck.error) {
+        return <ErrorMessage message={fetchCheck.error}/>
+    }
 
     if (!fetchCheck.data) {
         return <Loading description='Получаем ваши результаты'/>
@@ -28,7 +33,10 @@ function Result() {
         }, 0)
     }
 
-    if (fetchCheck.data.status !== 'Проверено') {
+    if (fetchCheck.data.status === 'В процессе') {
+        return <Loading description={'Проверяем вашу задачу'} />
+    } 
+    else if (fetchCheck.data.status !== 'Проверено') {
         return (
             <div>
                 {fetchCheck.data.status}

@@ -28,9 +28,26 @@ function usePost(url, onSuccess) {
             }
         }
         fetch(server_url + url, { body: body, method: 'POST', ...options })
-            .then((response) => response.json())
-            .then((json) =>  onSuccess(json))
-            .catch((error) => setError(error))
+            .then((response) => {
+                return response.json()
+                    .then((json) => {
+                        return {
+                            json: json, 
+                            ok: response.ok
+                        }
+                    }) 
+            })
+            .then((parsedResponse) => { 
+                if (!parsedResponse.ok) {
+                    throw parsedResponse.json;
+                } else {
+                    setError(null);
+                    onSuccess(parsedResponse.json) 
+                }
+            })
+            .catch((errorJson) => {
+                setError(errorJson.error || 'Ошибка соединения с сервером');
+            })
             .finally(() => setLoading(false));
     }
 
