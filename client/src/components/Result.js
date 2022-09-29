@@ -37,11 +37,7 @@ function Result() {
         return <Loading description={'Проверяем вашу задачу'} />
     } 
     else if (fetchCheck.data.status !== 'Проверено') {
-        return (
-            <div>
-                {fetchCheck.data.status}
-            </div>
-        )
+        return <ErrorMessage message={fetchCheck.data.status} />
     } else {
         return (
             <div>
