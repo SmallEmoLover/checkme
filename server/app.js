@@ -1,14 +1,14 @@
 const express = require('express');
 const cors = require('cors');
-const utils = require('./core/utils');
-const { add_authorization } = require('./middleware/auth_middleware');
-const Database = require('./core/database/database');
 const { spawn } = require('child_process');
 const formidable = require('formidable');
 const fs = require('node:fs');
 const mv = require('mv');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
+const Database = require('./core/database/database');
+const { add_authorization } = require('./middleware/auth_middleware');
+const utils = require('./core/utils');
 require('dotenv').config();
 
 const port = 9999;
@@ -38,30 +38,28 @@ app.get('/ping', (_, response) => {
  * @returns sends created check id to sender
  */
 app.post('/check/:task_id', authorize, utils.runRouteAsync(async (request, response) => {
-    const task_id = request.params.task_id;
+    const { task_id } = request.params;
     const form = formidable();
 
-    let check_id = await database.checks.create(task_id, request.auth_user._id);
+    const check_id = await database.checks.create(task_id, request.auth_user._id);
 
     form.parse(request, async (_, fields, files) => {
-        const arguments = [];
+        const answers = [];
         let index = 0;
         while (true) {
             if (fields[`${index}`]) {
-                arguments.push(fields[`${index}`])
-                index++;
-                continue;
-            };
-            if (files[`${index}`]) {
-                arguments.push(files[`${index}`].filepath)
-                index++;
-                continue;
+                answers.push(fields[`${index}`]);
+                index += 1;
+            } else if (files[`${index}`]) {
+                answers.push(files[`${index}`].filepath);
+                index += 1;
+            } else {
+                break;
             }
-            break;
         }
-        response.send(JSON.stringify({checkId: check_id}));
-        solve_task(check_id, task_id, arguments);
-    })
+        response.send(JSON.stringify({ checkId: check_id }));
+        solve_task(check_id, task_id, answers);
+    });
 }));
 
 /**
@@ -84,7 +82,7 @@ app.get('/results/:check_id', authorize, utils.runRouteAsync(async (request, res
 app.get('/tasks', authorize, utils.runRouteAsync(async (request, response) => {
     const tasks = await database.tasks.get_all();
     response.send(JSON.stringify(tasks));
-}))
+}));
 
 /**
  * POST-endpoint to create a new task
@@ -96,10 +94,10 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
     const form = formidable();
 
     form.parse(request, async (_, fields, files) => {
-        const criterions = JSON.parse(fields['criterions']);
-        const answer_format = JSON.parse(fields['answerFormat']);
+        const criterions = JSON.parse(fields.criterions);
+        const answer_format = JSON.parse(fields.answerFormat);
         const filenames = [];
-        for (criterion of Object.values(criterions)) {
+        for (const criterion of Object.values(criterions)) {
             if (criterion.test) {
                 if (files[criterion.test]) {
                     filenames.push(criterion.test);
@@ -111,10 +109,10 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
         }
 
         const taskId = await database.tasks.create(
-            fields['name'],
+            fields.name,
             criterions,
             answer_format,
-            fields['description']
+            fields.description,
         );
         console.log(`Created new task ${taskId}`);
 
@@ -125,22 +123,24 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
             }
         };
 
-        const filesDir = `/tasks/${taskId}`
-        if (!fs.existsSync(filesDir)){
+        const filesDir = `/tasks/${taskId}`;
+        if (!fs.existsSync(filesDir)) {
             fs.mkdirSync(filesDir);
         }
-        for (filename of filenames) {
+
+        for (const filename of filenames) {
             const file = files[filename];
             mv(file.filepath, `${filesDir}/${filename}`, onFileMoveError);
         }
-        const additional_archive = files['additional'];
+
+        const additional_archive = files.additional;
         if (additional_archive) {
             mv(additional_archive.filepath, `${filesDir}/additional.zip`, onFileMoveError);
         }
 
-        response.send(JSON.stringify({taskId: taskId}));
-    })
-}))
+        response.send(JSON.stringify({ taskId }));
+    });
+}));
 
 /**
  * GET-endpoint to get all checks for specified user
@@ -148,10 +148,10 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
  * @function
  * @returns sends all checks to specified user
  */
- app.get('/results', authorize, utils.runRouteAsync(async (request, response) => {
+app.get('/results', authorize, utils.runRouteAsync(async (request, response) => {
     const results = await database.checks.get_by_user(request.auth_user._id);
     response.send(JSON.stringify(results));
-}))
+}));
 
 /**
  * GET-endpoint to get task with task_id
@@ -162,7 +162,7 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
 app.get('/task/:task_id', authorize, utils.runRouteAsync(async (request, response) => {
     const task = await database.tasks.get(request.params.task_id);
     response.send(JSON.stringify(task));
-}))
+}));
 
 /**
  * DELETE-endpoint to delete task with task_id
@@ -171,18 +171,18 @@ app.get('/task/:task_id', authorize, utils.runRouteAsync(async (request, respons
  * @returns deletion status
  */
 app.delete('/task/:task_id', authorize, utils.runRouteAsync(async (request, response) => {
-    if (request.auth_user.username != 'admin') {
+    if (request.auth_user.username !== 'admin') {
         response.status(401).send('У вас нет прав на это действие');
         return;
     }
-    
+
     await database.tasks.delete(request.params.task_id);
-    response.send(JSON.stringify({status: 'complete'}));
-}))
+    response.send(JSON.stringify({ status: 'complete' }));
+}));
 
 app.post('/sign_up', utils.runRouteAsync(async (request, response) => {
     if (await database.users.get(request.body.username)) {
-        response.status(401).send(JSON.stringify({error: 'Пользователь с таким логином уже существует'}));
+        response.status(401).send(JSON.stringify({ error: 'Пользователь с таким логином уже существует' }));
         return;
     }
 
@@ -192,54 +192,54 @@ app.post('/sign_up', utils.runRouteAsync(async (request, response) => {
         request.body.username,
         request.body.name,
         request.body.surname,
-        password_hash
+        password_hash,
     );
 
     const user_data = {
         username: request.body.username,
         name: request.body.name,
-        surname: request.body.surname
-    }
+        surname: request.body.surname,
+    };
 
-    const token = jwt.sign({user_data}, process.env.AUTHORIZATION_SECRET);
+    const token = jwt.sign({ user_data }, process.env.AUTHORIZATION_SECRET);
 
-    response.send(JSON.stringify({...user_data, token: token}));
-}))
+    response.send(JSON.stringify({ ...user_data, token }));
+}));
 
 app.post('/sign_in', utils.runRouteAsync(async (request, response) => {
     const user = await database.users.get(request.body.username);
     if (!user) {
-        response.status(401).send(JSON.stringify({error: 'Пользователя с таким логином не существует'}));
+        response.status(401).send(JSON.stringify({ error: 'Пользователя с таким логином не существует' }));
         return;
     }
 
     if (!await argon2.verify(user.password, request.body.password)) {
-        response.status(401).send(JSON.stringify({error: 'Неверный пароль'}));
-        return
+        response.status(401).send(JSON.stringify({ error: 'Неверный пароль' }));
+        return;
     }
 
     const user_data = {
         username: user.username,
         name: user.name,
-        surname: user.surname
-    }
+        surname: user.surname,
+    };
 
-    const token = jwt.sign({user_data}, process.env.AUTHORIZATION_SECRET);
+    const token = jwt.sign({ user_data }, process.env.AUTHORIZATION_SECRET);
 
-    response.send(JSON.stringify({...user_data, token: token}));
-}))
+    response.send(JSON.stringify({ ...user_data, token }));
+}));
 
 app.listen(port, () => {
     console.log(`App listening at the ${port} port`);
 });
 
-function solve_task(check_id, task_id, arguments) {
-    console.log(`Run task ${task_id} with arguments: ${arguments}`);
-    const pyChecker = spawn('python3', ['./core/check_solution.py', check_id, task_id, ...arguments]);
+function solve_task(check_id, task_id, answers) {
+    console.log(`Run task ${task_id} with answers: ${answers}`);
+    const pyChecker = spawn('python3', ['./core/check_solution.py', check_id, task_id, ...answers]);
     pyChecker.stdout.on('data', (data) => {
-        console.log(`[PY]: ${check_id}: ${data}`)
-    })
+        console.log(`[PY]: ${check_id}: ${data}`);
+    });
     pyChecker.stderr.on('data', (data) => {
-        console.log(`[PY ERROR]: ${check_id}: ${data}`)
-    })
+        console.log(`[PY ERROR]: ${check_id}: ${data}`);
+    });
 }

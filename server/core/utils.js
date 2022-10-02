@@ -3,10 +3,10 @@
  * @param callback - function to wrap
  * @returns wrapped `callback` function
  */
- function runRouteAsync(callback) {
-    return function(request, response, next) {
+function runRouteAsync(callback) {
+    return function runAsync(request, response, next) {
         callback(request, response, next).catch(next);
-    }
+    };
 }
 
 module.exports.runRouteAsync = runRouteAsync;

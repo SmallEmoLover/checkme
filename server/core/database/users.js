@@ -11,16 +11,16 @@ class Users {
 
     async create(username, name, surname, password) {
         const result = await this.users.insertOne({
-            username: username,
-            name: name,
-            surname: surname,
-            password: password
+            username,
+            name,
+            surname,
+            password,
         });
         return result.insertedId.toString();
     }
 
     async get(username) {
-        const user = await this.users.findOne({username: username});
+        const user = await this.users.findOne({ username });
         return user;
     }
 }

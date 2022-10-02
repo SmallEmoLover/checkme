@@ -1,10 +1,11 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient } = require('mongodb');
 const Checks = require('./checks');
 const Tasks = require('./tasks');
 const Users = require('./users');
 
 class Database {
     #client;
+
     #database;
 
     constructor(uri) {

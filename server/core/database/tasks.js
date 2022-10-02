@@ -12,15 +12,15 @@ class Tasks {
     }
 
     async get(task_id) {
-        const task = await this.tasks.findOne({_id: ObjectId(task_id)});
+        const task = await this.tasks.findOne({ _id: ObjectId(task_id) });
         return task;
     }
 
     async delete(task_id) {
         const checks = this.#database.collection('checks');
-        let id = ObjectId(task_id);
+        const id = ObjectId(task_id);
         await this.tasks.deleteOne({ _id: id });
-        await checks.deleteMany({ taskId: id })
+        await checks.deleteMany({ taskId: id });
     }
 
     async get_all() {
@@ -32,10 +32,10 @@ class Tasks {
     async create(name, criterions, answer_format, description) {
         const tasks = this.#database.collection('tasks');
         const result = await tasks.insertOne({
-            name: name,
-            criterions: criterions,
+            name,
+            criterions,
             answerFormat: answer_format,
-            description: description
+            description,
         });
         return result.insertedId.toString();
     }
