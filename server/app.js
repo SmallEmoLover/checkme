@@ -2,14 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const utils = require('./core/utils');
 const { add_authorization } = require('./middleware/auth_middleware');
-const Database = require('./core/database');
+const Database = require('./core/database/database');
 const { spawn } = require('child_process');
 const formidable = require('formidable');
 const fs = require('node:fs');
 const mv = require('mv');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
-const { Db } = require('mongodb');
 require('dotenv').config();
 
 const port = 9999;
@@ -42,7 +41,7 @@ app.post('/check/:task_id', authorize, utils.runRouteAsync(async (request, respo
     const task_id = request.params.task_id;
     const form = formidable();
 
-    let check_id = await database.create_task_check(task_id, request.auth_user._id);
+    let check_id = await database.checks.create(task_id, request.auth_user._id);
 
     form.parse(request, async (_, fields, files) => {
         const arguments = [];
@@ -72,7 +71,7 @@ app.post('/check/:task_id', authorize, utils.runRouteAsync(async (request, respo
  * @returns sends check results
  */
 app.get('/results/:check_id', authorize, utils.runRouteAsync(async (request, response) => {
-    const results = await database.get_check_results(request.params.check_id);
+    const results = await database.checks.get(request.params.check_id);
     response.send(JSON.stringify(results));
 }));
 
@@ -83,7 +82,7 @@ app.get('/results/:check_id', authorize, utils.runRouteAsync(async (request, res
  * @returns sends list with tasks
  */
 app.get('/tasks', authorize, utils.runRouteAsync(async (request, response) => {
-    const tasks = await database.get_all_tasks();
+    const tasks = await database.tasks.get_all();
     response.send(JSON.stringify(tasks));
 }))
 
@@ -111,7 +110,7 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
             }
         }
 
-        const taskId = await database.create_task(
+        const taskId = await database.tasks.create(
             fields['name'],
             criterions,
             answer_format,
@@ -150,7 +149,7 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
  * @returns sends all checks to specified user
  */
  app.get('/results', authorize, utils.runRouteAsync(async (request, response) => {
-    const results = await database.get_user_checks(request.auth_user._id);
+    const results = await database.checks.get_by_user(request.auth_user._id);
     response.send(JSON.stringify(results));
 }))
 
@@ -161,7 +160,7 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
  * @returns sends task with specified id
  */
 app.get('/task/:task_id', authorize, utils.runRouteAsync(async (request, response) => {
-    const task = await database.get_task(request.params.task_id);
+    const task = await database.tasks.get(request.params.task_id);
     response.send(JSON.stringify(task));
 }))
 
@@ -177,19 +176,19 @@ app.delete('/task/:task_id', authorize, utils.runRouteAsync(async (request, resp
         return;
     }
     
-    await database.delete_task(request.params.task_id);
+    await database.tasks.delete(request.params.task_id);
     response.send(JSON.stringify({status: 'complete'}));
 }))
 
 app.post('/sign_up', utils.runRouteAsync(async (request, response) => {
-    if (await database.find_user(request.body.username)) {
+    if (await database.users.get(request.body.username)) {
         response.status(401).send(JSON.stringify({error: 'Пользователь с таким логином уже существует'}));
         return;
     }
 
     const password_hash = await argon2.hash(request.body.password);
 
-    await database.create_user(
+    await database.users.create(
         request.body.username,
         request.body.name,
         request.body.surname,
@@ -208,7 +207,7 @@ app.post('/sign_up', utils.runRouteAsync(async (request, response) => {
 }))
 
 app.post('/sign_in', utils.runRouteAsync(async (request, response) => {
-    const user = await database.find_user(request.body.username);
+    const user = await database.users.get(request.body.username);
     if (!user) {
         response.status(401).send(JSON.stringify({error: 'Пользователя с таким логином не существует'}));
         return;

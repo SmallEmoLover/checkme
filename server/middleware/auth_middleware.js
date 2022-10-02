@@ -16,7 +16,7 @@ function add_authorization(database, jwt_secret) {
 
         }
 
-        const user = await database.find_user(user_data.username);
+        const user = await database.users.get(user_data.username);
 
         if (!user) {
             response.status(401).send(JSON.stringify({error: 'Недействительный токен'}));
