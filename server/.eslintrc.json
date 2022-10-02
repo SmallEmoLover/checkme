@@ -1,0 +1,21 @@
+{
+    "env": {
+        "node": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": "airbnb-base",
+    "overrides": [
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "linebreak-style": ["error", "windows"],
+        "indent": ["error", 4],
+        "camelcase": "off",
+        "no-underscore-dangle": "warn",
+        "no-constant-condition": "off",
+        "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"]
+    }
+}
