@@ -154,6 +154,22 @@ app.get('/results', authorize, utils.runRouteAsync(async (request, response) => 
 }));
 
 /**
+ * GET-endpoint to get all checks
+ * @name /history
+ * @function
+ * @returns sends all checks to specified user
+ */
+app.get('/history/:page', authorize, utils.runRouteAsync(async (request, response) => {
+    if (request.auth_user.username !== 'admin') {
+        response.status(401).send('У вас нет прав на это действие');
+        return;
+    }
+
+    const results = await database.checks.get_all(request.params.page);
+    response.send(JSON.stringify(results));
+}));
+
+/**
  * GET-endpoint to get task with task_id
  * @name /task/:task_id
  * @function

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
+import formatDate from '../utils/utils';
 import ErrorMessage from './ErrorMessage';
 import Loading from './Loading';
 
@@ -29,7 +30,7 @@ function ResultList() {
                     className="block"
                 >
                     <div className=""> {result.task.name} </div>
-                    {result.status} - {(new Date(result.date)).toLocaleTimeString()}
+                    {result.status} - {formatDate(result.date)}
                 </div>
             ))}
         </div>

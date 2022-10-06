@@ -80,3 +80,8 @@ a {
 a:visited {
     color: inherit;
 }
+
+.navigation-buttons {
+    display: inline-block;
+    margin-right: 10px;
+}

@@ -25,6 +25,11 @@ function Header() {
                         Создать задачу
                     </Link>
                 </AdminRequired>
+                <AdminRequired>
+                    <Link className="navigation-link" to="/history/1">
+                        История задач
+                    </Link>
+                </AdminRequired>
             </div>
             <div className="user">
                 {authorization.username}

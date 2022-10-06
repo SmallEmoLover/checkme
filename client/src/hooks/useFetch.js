@@ -12,10 +12,12 @@ import AuthContext from '../context/AuthContext';
 function useFetch(url, options = {}) {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const [isLoading, setLoading] = useState(true);
     const authorization = useContext(AuthContext);
     const serverUrl = process.env.REACT_APP_SERVER_URL;
 
     const doFetch = () => {
+        setLoading(true);
         let fetchOptions = { ...options };
 
         if (authorization.token) {
@@ -46,12 +48,18 @@ function useFetch(url, options = {}) {
             })
             .catch((errorJson) => {
                 setError(errorJson.error || 'Ошибка соединения с сервером');
-            });
+            })
+            .finally(() => setLoading(false));
     };
 
-    useEffect(doFetch, []);
+    useEffect(doFetch, [url]);
 
-    return { data, error, fetch: doFetch };
+    return {
+        data,
+        error,
+        isLoading,
+        fetch: doFetch,
+    };
 }
 
 export default useFetch;

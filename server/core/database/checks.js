@@ -32,6 +32,33 @@ class Checks {
         return check;
     }
 
+    async get_all(page, limit = 10) {
+        const checks = await this.checks.aggregate([
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+            {
+                $lookup: {
+                    from: 'tasks',
+                    localField: 'taskId',
+                    foreignField: '_id',
+                    as: 'task',
+                },
+            },
+            { $unwind: '$task' },
+            { $sort: { date: -1 } },
+            { $skip: ((page - 1) * limit) },
+            { $limit: limit },
+        ]).toArray();
+        return checks;
+    }
+
     async create(task_id, user_id) {
         const result = await this.checks.insertOne({
             taskId: ObjectId(task_id),

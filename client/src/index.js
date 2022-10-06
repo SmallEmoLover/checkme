@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
@@ -8,6 +9,7 @@ import Task from './components/Task';
 import Result from './components/Result';
 import TaskForm from './components/TaskForm';
 import ResultList from './components/ResultList';
+import History from './components/History';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -19,6 +21,7 @@ root.render(
                 <Route path='/task/:taskId' element={<Task/>}/>
                 <Route path='/results/me' element={<ResultList/>}/>
                 <Route path='/results/:checkId' element={<Result/>}/>
+                <Route path='/history/:page' element={<History/>}/>
             </Route>
         </Routes>
     </BrowserRouter>
