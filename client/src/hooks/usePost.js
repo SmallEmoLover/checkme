@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import AuthContext from "../context/AuthContext";
+import { useContext, useState } from 'react';
+import AuthContext from '../context/AuthContext';
 
 /**
  * Hook to managing post requests
@@ -8,50 +8,52 @@ import AuthContext from "../context/AuthContext";
  * @returns {error, loading, doPost}
  */
 function usePost(url, onSuccess) {
-    let [error, setError] = useState(null);
-    let [loading, setLoading] = useState(false);
-    let authorization = useContext(AuthContext);
-    const server_url = process.env.REACT_APP_SERVER_URL;
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const authorization = useContext(AuthContext);
+    const serverUrl = process.env.REACT_APP_SERVER_URL;
 
     const doPost = (body, options = {}) => {
         if (loading) {
             return;
         }
         setLoading(true);
+
+        let fetchOptions = { ...options };
         if (authorization.token) {
-            options = {
+            fetchOptions = {
                 ...options,
                 headers: {
                     ...options.headers,
-                    Authentication: `Bearer ${authorization.token}`
-                }
-            }
+                    Authentication: `Bearer ${authorization.token}`,
+                },
+            };
         }
-        fetch(server_url + url, { body: body, method: 'POST', ...options })
-            .then((response) => {
-                return response.json()
-                    .then((json) => {
-                        return {
-                            json: json, 
-                            ok: response.ok
+        fetch(serverUrl + url, { body, method: 'POST', ...fetchOptions })
+            .then((response) => (
+                response.json()
+                    .then((json) => (
+                        {
+                            json,
+                            ok: response.ok,
                         }
-                    }) 
-            })
-            .then((parsedResponse) => { 
+                    ))
+            ))
+            .then((parsedResponse) => {
                 if (!parsedResponse.ok) {
                     throw parsedResponse.json;
                 } else {
                     setError(null);
-                    onSuccess(parsedResponse.json) 
+                    onSuccess(parsedResponse.json);
                 }
             })
             .catch((errorJson) => {
                 setError(errorJson.error || 'Ошибка соединения с сервером');
             })
             .finally(() => setLoading(false));
-    }
+    };
 
-    return {error: error, loading: loading, fetch: doPost}
+    return { error, loading, fetch: doPost };
 }
 
 export default usePost;

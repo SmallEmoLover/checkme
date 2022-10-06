@@ -8,30 +8,30 @@ import AdminRequired from './AdminRequired';
  * Header component with logo and navigation
  */
 function Header() {
-    let authorization = useContext(AuthContext);
+    const authorization = useContext(AuthContext);
 
-    return(
+    return (
         <div className="Header">
             <div className="navigation">
                 <div className="app-title"> Checkme </div>
-                <Link className='navigation-link' to='/'>
+                <Link className="navigation-link" to="/">
                     Список задач
                 </Link>
-                <Link className='navigation-link' to='/results/me'>
+                <Link className="navigation-link" to="/results/me">
                     Мои решения
                 </Link>
                 <AdminRequired>
-                    <Link className='navigation-link' to='/task/new'>
+                    <Link className="navigation-link" to="/task/new">
                         Создать задачу
                     </Link>
                 </AdminRequired>
             </div>
             <div className="user">
                 {authorization.username}
-                <a className='signout' href='/' onClick={() => authorization.signOut()}>Выйти</a>
+                <a className="signout" href="/" onClick={() => authorization.signOut()}>Выйти</a>
             </div>
         </div>
-    )
+    );
 }
 
 export default Header;

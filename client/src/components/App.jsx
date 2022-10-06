@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { IconContext } from 'react-icons/lib';
 import { Outlet } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
@@ -8,32 +9,34 @@ import Footer from './Footer';
 import Header from './Header';
 
 function App() {
-    let authorization = useAuthorization();
+    const icons = useMemo(() => ({ className: 'react-icons' }), []);
+
+    const authorization = useAuthorization();
     let content;
 
     if (!authorization.token) {
-        content = <Authorization/>
+        content = <Authorization />;
     } else {
         content = (
             <>
-                <div className='app-content'>
-                    <Header/>
+                <div className="app-content">
+                    <Header />
                 </div>
-                <hr/>
-                <div className='app-content main-page'>
-                    <Outlet/>
+                <hr />
+                <div className="app-content main-page">
+                    <Outlet />
                 </div>
-                <hr/>
-                <div className='app-content footer'>
-                    <Footer/>
+                <hr />
+                <div className="app-content footer">
+                    <Footer />
                 </div>
             </>
-        )
+        );
     }
 
     return (
         <AuthContext.Provider value={authorization}>
-            <IconContext.Provider value={{ className: 'react-icons' }}>
+            <IconContext.Provider value={icons}>
                 <div className="App">
                     {content}
                 </div>

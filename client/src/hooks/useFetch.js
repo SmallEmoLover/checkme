@@ -1,44 +1,47 @@
-import { useContext, useEffect, useState } from "react";
-import AuthContext from "../context/AuthContext";
+import { useContext, useEffect, useState } from 'react';
+import AuthContext from '../context/AuthContext';
 
 /**
  * Hook to fetch data from specified url. Fetches data when initializing.
  * @param {string} url - url to fetch from
  * @param {*} options - options to the `fetch` function call
- * @returns {} {data, error, fetch}, where data is server response in json format, error - possible errors, 
+ * @returns {} {data, error, fetch}, where data is server response in json format,
+ * error - possible errors,
  * fetch() - function to manually fetch data.
  */
-function useFetch(url, options={}) {
-    let [data, setData] = useState(null);
-    let [error, setError] = useState(null);
-    let authorization = useContext(AuthContext);
-    const server_url = process.env.REACT_APP_SERVER_URL;
+function useFetch(url, options = {}) {
+    const [data, setData] = useState(null);
+    const [error, setError] = useState(null);
+    const authorization = useContext(AuthContext);
+    const serverUrl = process.env.REACT_APP_SERVER_URL;
 
     const doFetch = () => {
+        let fetchOptions = { ...options };
+
         if (authorization.token) {
-            options = {
+            fetchOptions = {
                 ...options,
                 headers: {
                     ...options.headers,
-                    Authentication: `Bearer ${authorization.token}`
-                }
-            }
+                    Authentication: `Bearer ${authorization.token}`,
+                },
+            };
         }
-        fetch(server_url + url, options)
-            .then((response) => {
-                return response.json()
-                    .then((json) => {
-                        return {
-                            json: json, 
-                            ok: response.ok
+        fetch(serverUrl + url, fetchOptions)
+            .then((response) => (
+                response.json()
+                    .then((json) => (
+                        {
+                            json,
+                            ok: response.ok,
                         }
-                    }) 
-            })
-            .then((parsedResponse) => { 
+                    ))
+            ))
+            .then((parsedResponse) => {
                 if (!parsedResponse.ok) {
                     throw parsedResponse.json;
                 } else {
-                    setData(parsedResponse.json) 
+                    setData(parsedResponse.json);
                 }
             })
             .catch((errorJson) => {
@@ -48,7 +51,7 @@ function useFetch(url, options={}) {
 
     useEffect(doFetch, []);
 
-    return {data: data, error: error, fetch: doFetch}
+    return { data, error, fetch: doFetch };
 }
 
 export default useFetch;

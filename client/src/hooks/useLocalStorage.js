@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 /**
  * Hook to storing localStorage values
@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
  * @returns [localStorageItem, setLocalStorageItem]
  */
 function useLocalStorage(item) {
-    let [localStorageItem, setLocalStorageItem] = useState(localStorage.getItem(item));
+    const [localStorageItem, setLocalStorageItem] = useState(localStorage.getItem(item));
 
     useEffect(() => {
         if (localStorageItem === '' || localStorageItem === null || localStorageItem === undefined) {
@@ -14,7 +14,7 @@ function useLocalStorage(item) {
         } else {
             localStorage.setItem(item, localStorageItem);
         }
-    }, [localStorageItem])
+    }, [localStorageItem]);
 
     return [localStorageItem, setLocalStorageItem];
 }

@@ -1,22 +1,22 @@
-import { useRef, useState } from "react"
+import { useRef, useState } from 'react';
 
 /**
  * Hook to managing form at the page
  * @returns [inputValues, addInput]
  * inputValues - object with all inputs values accessible by it name
- * 
+ *
  * addInput(name, type='text', initial='') - add new input to the hook.
  */
 function useForm() {
     const inputs = useRef({});
     const [inputsValues, setInputsValues] = useState({});
 
-    const addInput = (name, type='text', initial='') => {
+    const addInput = (name, type = 'text', initial = '') => {
         if (name in inputs.current) {
-            let input = inputs.current[name];
+            const input = inputs.current[name];
             return {
                 type: input.type,
-                onChange: input.onChange
+                onChange: input.onChange,
             };
         }
 
@@ -26,34 +26,34 @@ function useForm() {
         const onChange = (event) => {
             let value;
             if (type === 'file') {
-                value = event.target.files[0];
+                [value] = event.target.files;
             } else {
                 value = event.target.value;
             }
-            setInputsValues((state) => {
-                return {
+            setInputsValues((state) => (
+                {
                     ...state,
-                    [name]: value || initial
+                    [name]: value || initial,
                 }
-            })
-        }
-        setInputsValues((state) => {
-            return {
+            ));
+        };
+        setInputsValues((state) => (
+            {
                 ...state,
-                [name]: initial
+                [name]: initial,
             }
-        });
+        ));
         inputs.current = {
             [name]: {
-                type: type,
-                onChange: onChange
+                type,
+                onChange,
             },
-            ...inputs.current
+            ...inputs.current,
         };
-        return { type: type, onChange: onChange }
-    }
+        return { type, onChange };
+    };
 
-    return [inputsValues, addInput]
+    return [inputsValues, addInput];
 }
 
 export default useForm;

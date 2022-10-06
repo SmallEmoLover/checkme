@@ -1,15 +1,15 @@
-import { useContext } from "react";
-import AuthContext from "../context/AuthContext";
-import useForm from "../hooks/useForm";
-import usePost from "../hooks/usePost";
-import ErrorMessage from "./ErrorMessage";
+import { useContext } from 'react';
+import AuthContext from '../context/AuthContext';
+import useForm from '../hooks/useForm';
+import usePost from '../hooks/usePost';
+import ErrorMessage from './ErrorMessage';
 
 /**
  * Component with sing up form
- * @param {*} props - expects modeToggle component with button to 
+ * @param {*} props - expects modeToggle component with button to
  * toggle between sing form up and sing in form
  */
-function SignUp(props) {
+function SignUp({ modeToggle }) {
     const [inputValues, addInput] = useForm();
     const authorization = useContext(AuthContext);
     const postCredentials = usePost(
@@ -19,10 +19,10 @@ function SignUp(props) {
                 authData.username,
                 authData.token,
                 authData.name,
-                authData.surname
-            )
-        }
-    )
+                authData.surname,
+            );
+        },
+    );
 
     const onSingUpClick = () => {
         postCredentials.fetch(
@@ -30,33 +30,34 @@ function SignUp(props) {
                 username: inputValues.username,
                 name: inputValues.name,
                 surname: inputValues.surname,
-                password: inputValues.password
+                password: inputValues.password,
             }),
-            { headers: {'Content-Type': 'application/json' } }
-    )}
+            { headers: { 'Content-Type': 'application/json' } },
+        );
+    };
 
-    return(
+    return (
         <div>
             <h2> Регистрация </h2>
             <ErrorMessage message={postCredentials.error} />
             <p> Логин </p>
-            <input {...addInput('username')}/>
+            <input {...addInput('username')} />
             <p> Имя </p>
-            <input {...addInput('name')}/>
+            <input {...addInput('name')} />
             <p> Фамилия </p>
-            <input {...addInput('surname')}/>
+            <input {...addInput('surname')} />
             <p> Пароль </p>
-            <input {...addInput('password', 'password')}/>
+            <input {...addInput('password', 'password')} />
             <p> Подтвердите пароль </p>
-            <input {...addInput('confirmation', 'password')}/>
+            <input {...addInput('confirmation', 'password')} />
             <div className="authorization-buttons-panel">
-                <button disabled={postCredentials.isLoading} onClick={onSingUpClick}> 
-                    Зарегистрироваться 
+                <button disabled={postCredentials.isLoading} onClick={onSingUpClick}>
+                    Зарегистрироваться
                 </button>
-                {props.modeToggle}
+                {modeToggle}
             </div>
         </div>
-    )
+    );
 }
 
 export default SignUp;
