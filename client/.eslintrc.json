@@ -17,7 +17,7 @@
         "react"
     ],
     "rules": {
-        "linebreak-style": ["error", "windows"],
+        "linebreak-style": ["warn", "windows"],
         "indent": ["error", 4],
         "no-param-reassign": "warn",
         "react/react-in-jsx-scope": "off",
