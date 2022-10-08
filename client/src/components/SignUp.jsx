@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import AuthContext from '../context/AuthContext';
 import useForm from '../hooks/useForm';
 import usePost from '../hooks/usePost';
@@ -11,6 +11,7 @@ import ErrorMessage from './ErrorMessage';
  */
 function SignUp({ modeToggle }) {
     const [inputValues, addInput] = useForm();
+    const [inputError, setInputError] = useState(null);
     const authorization = useContext(AuthContext);
     const postCredentials = usePost(
         '/sign_up',
@@ -25,6 +26,16 @@ function SignUp({ modeToggle }) {
     );
 
     const onSingUpClick = () => {
+        if (inputValues.password !== inputValues.confirmation) {
+            setInputError('Пароли не совпадают');
+            return;
+        }
+        if (Object.values(inputValues).some((value) => !value)) {
+            setInputError('Заполните все поля');
+            return;
+        }
+
+        setInputError(null);
         postCredentials.fetch(
             JSON.stringify({
                 username: inputValues.username,
@@ -39,7 +50,7 @@ function SignUp({ modeToggle }) {
     return (
         <div>
             <h2> Регистрация </h2>
-            <ErrorMessage message={postCredentials.error} />
+            <ErrorMessage message={postCredentials.error || inputError} />
             <p> Логин </p>
             <input {...addInput('username')} />
             <p> Имя </p>
