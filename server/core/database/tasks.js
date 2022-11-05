@@ -12,7 +12,15 @@ class Tasks {
     }
 
     async get(task_id) {
-        const task = await this.tasks.findOne({ _id: ObjectId(task_id) });
+        const task = await this.tasks.findOne(
+            { _id: ObjectId(task_id) },
+            {
+                projection: {
+                    criterions: false,
+                    _id: false,
+                },
+            },
+        );
         return task;
     }
 
@@ -25,7 +33,14 @@ class Tasks {
 
     async get_all() {
         const tasks = this.#database.collection('tasks');
-        const result = await tasks.find({}).toArray();
+        const result = await tasks.find(
+            {},
+            {
+                projection: {
+                    name: true,
+                },
+            },
+        ).toArray();
         return result;
     }
 

@@ -20,15 +20,37 @@ class Checks {
                     localField: 'taskId',
                     foreignField: '_id',
                     as: 'task',
+                    pipeline: [{
+                        $project: {
+                            name: true,
+                            _id: false,
+                        },
+                    }],
                 },
             },
             { $unwind: '$task' },
+            {
+                $project: {
+                    task: true,
+                    status: true,
+                    date: true,
+                },
+            },
         ]).toArray();
         return result;
     }
 
     async get(check_id) {
-        const check = await this.checks.findOne({ _id: ObjectId(check_id) });
+        const check = await this.checks.findOne(
+            { _id: ObjectId(check_id) },
+            {
+                projection: {
+                    status: true,
+                    result: true,
+                    _id: false,
+                },
+            },
+        );
         return check;
     }
 
@@ -40,6 +62,13 @@ class Checks {
                     localField: 'userId',
                     foreignField: '_id',
                     as: 'user',
+                    pipeline: [{
+                        $project: {
+                            name: true,
+                            surname: true,
+                            _id: false,
+                        },
+                    }],
                 },
             },
             { $unwind: '$user' },
@@ -49,12 +78,27 @@ class Checks {
                     localField: 'taskId',
                     foreignField: '_id',
                     as: 'task',
+                    pipeline: [{
+                        $project: {
+                            name: true,
+                            _id: false,
+                        },
+                    }],
                 },
             },
             { $unwind: '$task' },
             { $sort: { date: -1 } },
             { $skip: ((page - 1) * limit) },
             { $limit: limit },
+            {
+                $project: {
+                    _id: true,
+                    task: true,
+                    user: true,
+                    status: true,
+                    date: true,
+                },
+            },
         ]).toArray();
         return checks;
     }
