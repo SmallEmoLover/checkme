@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import useFetch from '../hooks/useFetch';
 import Loading from './Loading';
@@ -11,6 +11,7 @@ import ErrorMessage from './ErrorMessage';
  */
 function Result() {
     const params = useParams();
+    const navigate = useNavigate();
     const fetchCheck = useFetch(`/results/${params.checkId}`);
 
     useEffect(() => {
@@ -41,6 +42,19 @@ function Result() {
     return (
         <div>
             <h2> Результат: {countTotalScore()} </h2>
+            <a
+                onClick={() => navigate(`/task/${fetchCheck.data.task._id}`)}
+                role="link"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                        navigate(`/task/${fetchCheck.data.task._id}`);
+                    }
+                }}
+                className="task-link"
+            >
+                {fetchCheck.data.task.name}
+            </a>
             <div className="criteria-list">
                 <div className="criteria-message">
                     <b> Критерий </b>

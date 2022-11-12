@@ -41,17 +41,32 @@ class Checks {
     }
 
     async get(check_id) {
-        const check = await this.checks.findOne(
-            { _id: ObjectId(check_id) },
+        const check = await this.checks.aggregate([
+            { $match: { _id: ObjectId(check_id) } },
             {
-                projection: {
+                $lookup: {
+                    from: 'tasks',
+                    localField: 'taskId',
+                    foreignField: '_id',
+                    as: 'task',
+                    pipeline: [{
+                        $project: {
+                            name: true,
+                        },
+                    }],
+                },
+            },
+            { $unwind: '$task' },
+            {
+                $project: {
                     status: true,
                     result: true,
+                    task: true,
                     _id: false,
                 },
             },
-        );
-        return check;
+        ]).toArray();
+        return check[0];
     }
 
     async get_all(page, limit = 10) {

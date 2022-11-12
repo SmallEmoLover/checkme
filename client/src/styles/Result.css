@@ -30,3 +30,11 @@
     padding-left: 20px;
     flex: 1;
 }
+
+.task-link {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 20px;
+    text-decoration: underline;
+    cursor: pointer;
+}
