@@ -96,15 +96,10 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
     form.parse(request, async (_, fields, files) => {
         const criterions = JSON.parse(fields.criterions);
         const answer_format = JSON.parse(fields.answerFormat);
-        const filenames = [];
         for (const criterion of Object.values(criterions)) {
-            if (criterion.test) {
-                if (files[criterion.test]) {
-                    filenames.push(criterion.test);
-                } else {
-                    response.status(406).send();
-                    return;
-                }
+            if (criterion.test && !files[criterion.test]) {
+                response.status(406).send();
+                return;
             }
         }
 
@@ -128,14 +123,13 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
             fs.mkdirSync(filesDir);
         }
 
-        for (const filename of filenames) {
-            const file = files[filename];
-            mv(file.filepath, `${filesDir}/${filename}`, onFileMoveError);
-        }
+        Object.values(files).forEach((file) => {
+            mv(file.filepath, `${filesDir}/${file.originalFilename}`, onFileMoveError);
+        });
 
-        const additional_archive = files.additional;
-        if (additional_archive) {
-            mv(additional_archive.filepath, `${filesDir}/additional.zip`, onFileMoveError);
+        // TODO: Store additional name in DB
+        if (fields.additional) {
+            mv(`${filesDir}/${fields.additional}`, `${filesDir}/additional.zip`, onFileMoveError);
         }
 
         response.send(JSON.stringify({ taskId }));

@@ -21,12 +21,12 @@ function useForm() {
         }
 
         if (type === 'file') {
-            initial = null;
+            initial = [];
         }
         const onChange = (event) => {
             let value;
             if (type === 'file') {
-                [value] = event.target.files;
+                value = Array.from(event.target.files);
             } else {
                 value = event.target.value;
             }

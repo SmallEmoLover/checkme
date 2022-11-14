@@ -9,9 +9,9 @@ import ErrorMessage from './ErrorMessage';
 function parseCriterionsJson(criterions) {
     const json = JSON.parse(criterions);
     const result = [];
-    for (const data of Object.values(json)) {
-        if (data.test) {
-            result.push(data.test);
+    for (const data of Object.keys(json)) {
+        if (json[data].test) {
+            result.push(data);
         }
     }
     return result;
@@ -43,24 +43,32 @@ function TaskForm() {
         const formData = new FormData();
         formData.append('name', inputsValues.name);
         formData.append('description', inputsValues.description);
-        formData.append('criterions', inputsValues.criterionsJson);
+
+        const correctedCriterions = JSON.parse(inputsValues.criterionsJson);
+        for (const criterion of Object.keys(correctedCriterions)) {
+            if (correctedCriterions[criterion].test) {
+                correctedCriterions[criterion].test = inputsValues[`${criterion}_file`];
+            }
+        }
+        formData.append('criterions', JSON.stringify(correctedCriterions));
         formData.append('answerFormat', JSON.stringify(
             answersFormat.map((answer) => (
                 { name: inputsValues[answer], type: inputsValues[`${answer}Type`] }
             )),
         ));
-        criterions.forEach((criterion) => {
-            formData.append(criterion, inputsValues[criterion], criterion);
+        inputsValues.files.forEach((file) => {
+            formData.append(file.name, file, file.name);
         });
         if (inputsValues.additional_files) {
-            formData.append('additional', inputsValues.additional_files, 'additional_files.zip');
+            formData.append('additional', inputsValues.additional_files);
         }
         taskPost.fetch(formData);
     };
 
     const isFormDataReady = () => {
-        const inputNames = criterions.concat(answersFormat, ['name', 'description', 'criterionsJson']);
-        return inputNames.every((input) => inputsValues[input]);
+        const inputNames = criterions.map((criterion) => `${criterion}_file`)
+            .concat(answersFormat, ['name', 'description', 'criterionsJson']);
+        return criterions.length !== 0 && inputNames.every((input) => inputsValues[input]);
     };
 
     return (
@@ -85,20 +93,41 @@ function TaskForm() {
             </button>
             <h3> JSON с критериями задачи </h3>
             <textarea {...addInput('criterionsJson', null, '{\n  \n}')} />
-            <h3> Файлы тестов: </h3>
-            {criterions.map((criterion) => (
-                <div key={criterion} className="criterionInputBox">
-                    <div className="criterionName">
-                        {criterion}
-                    </div>
-                    <div className="criterionFileInput">
-                        <input {...addInput(criterion, 'file')} />
-                    </div>
+            <h3> Файлы тестов </h3>
+            <div>
+                <input multiple="multiple" {...addInput('files', 'file')} />
+            </div>
+            <h3> Соотнесите тест с запускаемым файлом </h3>
+            {criterions.sort().map((criterion) => (
+                <div key={criterion} className="criterion-select">
+                    <div className="criterion-select-label"> {criterion} </div>
+                    <select
+                        {...addInput(`${criterion}_file`, null, '')}
+                        className="criterion-select-input"
+                    >
+                        <option value=""> Не выбрано </option>
+                        {inputsValues.files?.sort()?.map((file) => (
+                            <option key={file.name} value={file.name}> {file.name} </option>
+                        ))}
+                    </select>
                 </div>
             ))}
-            <h3> Дополнительные файлы (архив .zip) </h3>
-            <div>
-                <input {...addInput('additional_files', 'file')} />
+            <h3> Архив с дополнительными файлами </h3>
+            <div className="criterion-select">
+                <div className="criterion-select-label"> Архив (.zip) </div>
+                <select
+                    {...addInput('additional_files', null, '')}
+                    className="criterion-select-input"
+                >
+                    <option value=""> Без архива </option>
+                    {inputsValues.files
+                        ?.sort()
+                        ?.filter((file) => (
+                            file.name.endsWith('.zip')
+                        ))?.map?.((file) => (
+                            <option key={file.name} value={file.name}> {file.name} </option>
+                        ))}
+                </select>
             </div>
             <button disabled={!isFormDataReady()} onClick={onSubmit}> Отправить </button>
             <ErrorMessage message={taskPost.error} />

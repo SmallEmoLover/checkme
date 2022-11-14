@@ -39,7 +39,7 @@ function Task() {
         const formData = new FormData();
         fetchTask.data.answerFormat.forEach((answer, index) => {
             if (answer.type === 'file') {
-                formData.append(index, inputsValues[answer.name], index);
+                formData.append(index, inputsValues[answer.name][0], index);
             } else {
                 formData.append(index, inputsValues[answer.name]);
             }

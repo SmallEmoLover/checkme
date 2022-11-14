@@ -15,3 +15,18 @@ textarea {
 .criterionFileInput {
     flex: 4;
 }
+
+.criterion-select-label {
+    flex: 1;
+}
+
+.criterion-select-input {
+    flex: 1;
+    width: 100%;
+}
+
+.criterion-select {
+    display: flex;
+    width: 50%;
+    margin-bottom: 10px;
+}
