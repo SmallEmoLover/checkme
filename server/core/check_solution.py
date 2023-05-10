@@ -26,16 +26,17 @@ def main():
     result = {}
     criterions = task['criterions']
     try: 
-        if 'prepare' in criterions:
-            if (not execute_file('prepare')):
-                database.checks.update_one({'_id': ObjectId(check_id)}, {'$set': { 'status': 'Ошибка подготовки к тестам' }})
-                return
-
-            criterions.pop('prepare')
+        if (os.path.isfile(os.path.join(task_dir, 'beforeAll.py'))):
+            execute_file('beforeAll.py')
 
         for criterion, data in criterions.items():
             if 'test' not in data.keys():
                 continue
+
+            if (os.path.isfile(os.path.join(task_dir, 'beforeEach.py'))):
+                execute_file('beforeEach.py')
+
+            # For the case if test changes working directory
             os.chdir(working_dir)
             result[criterion] = {}
             if(execute_file(data['test'])):
@@ -44,6 +45,12 @@ def main():
             else:
                 result[criterion]['score'] = 0
                 result[criterion]['message'] = data['message']
+
+            if (os.path.isfile(os.path.join(task_dir, 'afterEach.py'))):
+                execute_file('afterEach.py')
+
+        if (os.path.isfile(os.path.join(task_dir, 'afterAll.py'))):
+            execute_file('afterAll.py')
 
         database.checks.update_one({'_id': ObjectId(check_id)}, {'$set': { 'result': result, 'status': 'Проверено' }})
     except Exception as e:

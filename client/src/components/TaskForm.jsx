@@ -59,9 +59,11 @@ function TaskForm() {
         inputsValues.files.forEach((file) => {
             formData.append(file.name, file, file.name);
         });
-        if (inputsValues.additional_files) {
-            formData.append('additional', inputsValues.additional_files);
-        }
+        ['additional_files', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach((inputName) => {
+            if (inputsValues[inputName]) {
+                formData.append(inputName, inputsValues[inputName]);
+            }
+        });
         taskPost.fetch(formData);
     };
 
@@ -96,6 +98,54 @@ function TaskForm() {
             <h3> Файлы тестов </h3>
             <div>
                 <input multiple="multiple" {...addInput('files', 'file')} />
+                <div className="criterion-select">
+                    <div className="criterion-select-label"> Выполнять перед каждым тестом: </div>
+                    <select
+                        {...addInput('beforeEach', null, '')}
+                        className="criterion-select-input"
+                    >
+                        <option value=""> Не выбрано </option>
+                        {inputsValues.files?.sort()?.map((file) => (
+                            <option key={file.name} value={file.name}> {file.name} </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="criterion-select">
+                    <div className="criterion-select-label"> Выполнять после каждого теста: </div>
+                    <select
+                        {...addInput('afterEach', null, '')}
+                        className="criterion-select-input"
+                    >
+                        <option value=""> Не выбрано </option>
+                        {inputsValues.files?.sort()?.map((file) => (
+                            <option key={file.name} value={file.name}> {file.name} </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="criterion-select">
+                    <div className="criterion-select-label"> Выполнить перед тестами: </div>
+                    <select
+                        {...addInput('beforeAll', null, '')}
+                        className="criterion-select-input"
+                    >
+                        <option value=""> Не выбрано </option>
+                        {inputsValues.files?.sort()?.map((file) => (
+                            <option key={file.name} value={file.name}> {file.name} </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="criterion-select">
+                    <div className="criterion-select-label"> Выполнять после тестов: </div>
+                    <select
+                        {...addInput('afterAll', null, '')}
+                        className="criterion-select-input"
+                    >
+                        <option value=""> Не выбрано </option>
+                        {inputsValues.files?.sort()?.map((file) => (
+                            <option key={file.name} value={file.name}> {file.name} </option>
+                        ))}
+                    </select>
+                </div>
             </div>
             <h3> Соотнесите тест с запускаемым файлом </h3>
             {criterions.sort().map((criterion) => (

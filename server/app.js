@@ -127,9 +127,15 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
             mv(file.filepath, `${filesDir}/${file.originalFilename}`, onFileMoveError);
         });
 
+        ['beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach((testName) => {
+            if (files[testName]) {
+                mv(`${filesDir}/${fields[testName]}`, `${filesDir}/${testName}.py`, onFileMoveError);
+            }
+        });
+
         // TODO: Store additional name in DB
-        if (fields.additional) {
-            mv(`${filesDir}/${fields.additional}`, `${filesDir}/additional.zip`, onFileMoveError);
+        if (fields.additional_files) {
+            mv(`${filesDir}/${fields.additional_files}`, `${filesDir}/additional.zip`, onFileMoveError);
         }
 
         response.send(JSON.stringify({ taskId }));
