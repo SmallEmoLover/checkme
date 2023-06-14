@@ -1,5 +1,5 @@
-const { useContext } = require('react');
-const { default: AuthContext } = require('../context/AuthContext');
+import { useContext } from 'react';
+import AuthContext from '../context/AuthContext';
 
 /**
  * A component to hide children elements if username !== 'admin'
