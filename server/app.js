@@ -22,6 +22,20 @@ app.use(cors());
 const authorize = add_authorization(database, process.env.AUTHORIZATION_SECRET);
 
 /**
+ * Run OS Python script what run units
+ */
+function solve_task(check_id, task_id, answers) {
+    console.log(`Run task ${task_id} with answers: ${answers}`);
+    const pyChecker = spawn('python3', ['./core/check_solution.py', check_id, task_id, ...answers]);
+    pyChecker.stdout.on('data', (data) => {
+        console.log(`[PY]: ${check_id}: ${data}`);
+    });
+    pyChecker.stderr.on('data', (data) => {
+        console.log(`[PY ERROR]: ${check_id}: ${data}`);
+    });
+}
+
+/**
  * GET-endpoint to check server availability
  * @name /ping
  * @function
@@ -196,6 +210,12 @@ app.delete('/task/:task_id', authorize, utils.runRouteAsync(async (request, resp
     response.send(JSON.stringify({ status: 'complete' }));
 }));
 
+/**
+ * POST-endpoint to sign up an user
+ * @name /sign_up
+ * @function
+ * @returns authorization token, if user creation succeded
+ */
 app.post('/sign_up', utils.runRouteAsync(async (request, response) => {
     if (await database.users.get(request.body.username)) {
         response.status(401).send(JSON.stringify({ error: 'Пользователь с таким логином уже существует' }));
@@ -222,6 +242,12 @@ app.post('/sign_up', utils.runRouteAsync(async (request, response) => {
     response.send(JSON.stringify({ ...user_data, token }));
 }));
 
+/**
+ * POST-endpoint to sign in an user
+ * @name /sign_in
+ * @function
+ * @returns authorization token, if logpass correct
+ */
 app.post('/sign_in', utils.runRouteAsync(async (request, response) => {
     const user = await database.users.get(request.body.username);
     if (!user) {
@@ -245,17 +271,58 @@ app.post('/sign_in', utils.runRouteAsync(async (request, response) => {
     response.send(JSON.stringify({ ...user_data, token }));
 }));
 
+/**
+ * POST-endpoint to assign group to user
+ * @name /set_user_group
+ * @function
+ * @returns status if assigment succeded
+ */
+app.post('/set_user_group', authorize, utils.runRouteAsync(async (request, response) => {
+    if (request.auth_user.username !== 'admin') {
+        response.status(401).send('У вас нет прав на это действие');
+        return;
+    }
+
+    await database.users.set_groups(
+        request.body.user_id,
+        request.body.groups,
+    );
+
+    response.send(JSON.stringify({ status: 'complete' }));
+}));
+
+/**
+ * GET-endpoint what fetches users data
+ * @name /users
+ * @function
+ * @returns list with users
+ */
+app.get('/users', authorize, utils.runRouteAsync(async (request, response) => {
+    if (request.auth_user.username !== 'admin') {
+        response.status(401).send('У вас нет прав на это действие');
+        return;
+    }
+
+    const results = await database.users.get_all();
+    response.send(JSON.stringify(results));
+}));
+
+/**
+ * GET-endpoint what fetches groups list
+ * @name /groups
+ * @function
+ * @returns list with groups
+ */
+app.get('/groups', authorize, utils.runRouteAsync(async (request, response) => {
+    if (request.auth_user.username !== 'admin') {
+        response.status(401).send('У вас нет прав на это действие');
+        return;
+    }
+
+    const results = await database.users.get_groups();
+    response.send(JSON.stringify(results));
+}));
+
 app.listen(port, () => {
     console.log(`App listening at the ${port} port`);
 });
-
-function solve_task(check_id, task_id, answers) {
-    console.log(`Run task ${task_id} with answers: ${answers}`);
-    const pyChecker = spawn('python3', ['./core/check_solution.py', check_id, task_id, ...answers]);
-    pyChecker.stdout.on('data', (data) => {
-        console.log(`[PY]: ${check_id}: ${data}`);
-    });
-    pyChecker.stderr.on('data', (data) => {
-        console.log(`[PY ERROR]: ${check_id}: ${data}`);
-    });
-}
