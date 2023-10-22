@@ -10,6 +10,7 @@ import Result from './components/Result';
 import TaskForm from './components/TaskForm';
 import ResultList from './components/ResultList';
 import History from './components/History';
+import UserList from './components/user/UserList';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -22,6 +23,7 @@ root.render(
                 <Route path='/results/me' element={<ResultList/>}/>
                 <Route path='/results/:checkId' element={<Result/>}/>
                 <Route path='/history/:page' element={<History/>}/>
+                <Route path='/users' element={<UserList/>}/>
             </Route>
         </Routes>
     </BrowserRouter>

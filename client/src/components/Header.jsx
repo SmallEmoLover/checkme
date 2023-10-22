@@ -30,6 +30,11 @@ function Header() {
                         История задач
                     </Link>
                 </AdminRequired>
+                <AdminRequired>
+                    <Link className="navigation-link" to="/users">
+                        Пользователи
+                    </Link>
+                </AdminRequired>
             </div>
             <div className="user">
                 {authorization.username}

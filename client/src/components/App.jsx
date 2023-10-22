@@ -59,7 +59,11 @@ function App() {
                     <div className="App">
                         {content}
                         {popups.map((popup) => (
-                            <Popup onClose={() => closePopup(popup.id)} {...popup.props} />
+                            <Popup
+                                key={popup.id}
+                                onClose={() => closePopup(popup.id)}
+                                {...popup.props}
+                            />
                         ))}
                     </div>
                 </IconContext.Provider>
