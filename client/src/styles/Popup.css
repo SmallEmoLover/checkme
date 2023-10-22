@@ -1,0 +1,15 @@
+.popup_wrapper {
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.popup_container {
+    min-width: 300px;
+    max-width: 80%;
+    background-color: aliceblue;
+    border-radius: 12px;
+    padding: 12px;
+}
