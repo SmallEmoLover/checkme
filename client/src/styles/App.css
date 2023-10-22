@@ -85,3 +85,35 @@ a:visited {
     display: inline-block;
     margin-right: 10px;
 }
+
+.absolute {
+    position: absolute;
+}
+
+.flex {
+    display: flex;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.width-full {
+    width: 100%;
+}
+
+.height-full {
+    height: 100%;
+}
+
+.flex-column {
+    flex-direction: column;
+}

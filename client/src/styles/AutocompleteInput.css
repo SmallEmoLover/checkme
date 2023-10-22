@@ -1,0 +1,6 @@
+.autocomplete-suggestion {
+    background-color: white;
+    border: 1px black solid;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
