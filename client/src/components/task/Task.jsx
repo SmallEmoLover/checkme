@@ -1,13 +1,13 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import useFetch from '../hooks/useFetch';
-import Loading from './Loading';
-import '../styles/Task.css';
-import useForm from '../hooks/useForm';
-import usePost from '../hooks/usePost';
-import Accordion from './Accordion';
-import Markdown from './Markdown';
-import AdminRequired from './AdminRequired';
-import ErrorMessage from './ErrorMessage';
+import useFetch from '../../hooks/useFetch';
+import Loading from '../Loading';
+import './Task.css';
+import useForm from '../../hooks/useForm';
+import usePost from '../../hooks/usePost';
+import Accordion from '../Accordion';
+import Markdown from '../Markdown';
+import AdminRequired from '../AdminRequired';
+import ErrorMessage from '../ErrorMessage';
 
 /**
  * Component to show single task with form to send solution

@@ -1,8 +1,8 @@
 import { useContext, useState } from 'react';
-import AuthContext from '../context/AuthContext';
-import useForm from '../hooks/useForm';
-import usePost from '../hooks/usePost';
-import ErrorMessage from './ErrorMessage';
+import AuthContext from '../../context/AuthContext';
+import useForm from '../../hooks/useForm';
+import usePost from '../../hooks/usePost';
+import ErrorMessage from '../ErrorMessage';
 
 /**
  * Component with sing up form

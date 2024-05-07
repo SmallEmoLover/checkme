@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useForm from '../hooks/useForm';
-import usePost from '../hooks/usePost';
-import '../styles/TaskForm.css';
-import AdminRequired from './AdminRequired';
-import ErrorMessage from './ErrorMessage';
+import useForm from '../../hooks/useForm';
+import usePost from '../../hooks/usePost';
+import './TaskForm.css';
+import AdminRequired from '../AdminRequired';
+import ErrorMessage from '../ErrorMessage';
 
 function parseCriterionsJson(criterions) {
     const json = JSON.parse(criterions);

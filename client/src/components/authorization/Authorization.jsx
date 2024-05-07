@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import SignUp from './SignUp';
 import SingIn from './SingIn';
-import '../styles/Authorization.css';
+import './Authorization.css';
 
 /**
  * Authorization component with sign in and sing up forms rendering

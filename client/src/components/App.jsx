@@ -5,7 +5,7 @@ import AuthContext from '../context/AuthContext';
 import PopupContext from '../context/PopupContext';
 import useAuthorization from '../hooks/useAuthorization';
 import '../styles/App.css';
-import Authorization from './Authorization';
+import Authorization from './authorization/Authorization';
 import Popup from './common/Popup';
 import Footer from './Footer';
 import Header from './Header';

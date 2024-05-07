@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import '../styles/TasksList.css';
-import withFetch from './fetch/withFetch';
+import './TasksList.css';
+import withFetch from '../fetch/withFetch';
 
 /**
  * Component to show all available tasks
