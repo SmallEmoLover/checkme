@@ -1,28 +1,17 @@
 import { useNavigate } from 'react-router-dom';
-import useFetch from '../hooks/useFetch';
 import '../styles/TasksList.css';
-import ErrorMessage from './ErrorMessage';
-import Loading from './Loading';
+import withFetch from './fetch/withFetch';
 
 /**
  * Component to show all available tasks
  */
-function TasksList() {
-    const fetchTasks = useFetch('/tasks');
+function TasksList({ fetchData: tasks }) {
     const navigate = useNavigate();
-
-    if (fetchTasks.error) {
-        return <ErrorMessage message={fetchTasks.error} />;
-    }
-
-    if (!fetchTasks.data) {
-        return <Loading description="Получаем список задач" />;
-    }
 
     return (
         <div>
             <h2> Список задач </h2>
-            {fetchTasks.data.map((task) => (
+            {tasks.map((task) => (
                 <div
                     key={task._id}
                     role="link"
@@ -42,4 +31,4 @@ function TasksList() {
     );
 }
 
-export default TasksList;
+export default withFetch(TasksList, '/tasks');
