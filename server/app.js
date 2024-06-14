@@ -22,6 +22,20 @@ app.use(cors());
 const authorize = add_authorization(database, process.env.AUTHORIZATION_SECRET);
 
 /**
+ * Runs OS Python script that starts container with DB and launch checks
+ */
+function solve_db_task(task, check_id, answers) {
+    console.log(`Run DB task ${task._id} on ${task.dbType}`);
+    const pyChecker = spawn('python3', ['./core/check_db_solution.py', check_id, `${task._id}`, task.dbType, 'dbPrepare.sql', ...answers]);
+    pyChecker.stdout.on('data', (data) => {
+        console.log(`[PY]: ${check_id}: ${data}`);
+    });
+    pyChecker.stderr.on('data', (data) => {
+        console.log(`[PY ERROR]: ${check_id}: ${data}`);
+    });
+}
+
+/**
  * Run OS Python script what run units
  */
 function solve_task(check_id, task_id, answers) {
@@ -72,7 +86,14 @@ app.post('/check/:task_id', authorize, utils.runRouteAsync(async (request, respo
             }
         }
         response.send(JSON.stringify({ checkId: check_id }));
-        solve_task(check_id, task_id, answers);
+
+        const task = await database.tasks.get(task_id);
+
+        if (task.dbType) {
+            solve_db_task(task, check_id, answers);
+        } else {
+            solve_task(check_id, task_id, answers, 'dbPrepare.sql');
+        }
     });
 }));
 
@@ -122,6 +143,7 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
             criterions,
             answer_format,
             fields.description,
+            fields.dbType,
         );
         console.log(`Created new task ${taskId}`);
 
@@ -141,9 +163,11 @@ app.post('/task/new', authorize, utils.runRouteAsync(async (request, response) =
             mv(file.filepath, `${filesDir}/${file.originalFilename}`, onFileMoveError);
         });
 
-        ['beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach((testName) => {
-            if (files[testName]) {
-                mv(`${filesDir}/${fields[testName]}`, `${filesDir}/${testName}.py`, onFileMoveError);
+        ['dbPrepare', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach((testName) => {
+            const fileName = fields[testName];
+            console.log(fileName);
+            if (fileName) {
+                mv(`${filesDir}/${fileName}`, `${filesDir}/${testName}.${testName === 'dbPrepare' ? 'sql' : 'py'}`, onFileMoveError);
             }
         });
 

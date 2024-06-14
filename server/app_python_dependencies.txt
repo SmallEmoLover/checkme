@@ -1,2 +1,5 @@
 pymongo==4.2.0
 python-dotenv==0.21.0
+mysql-connector-python==8.4.0
+psycopg2==2.9.9
+docker
