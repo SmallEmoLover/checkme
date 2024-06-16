@@ -9,7 +9,7 @@ import time
 import docker
 from uuid import uuid4
 
-from .constants import PATH_TASK_FILES_IN_CONTAINER, VOLUME_NAME, VOLUME_READ_WRITE_MODE, PATH_DOCKER_VOLUME
+from .constants import PATH_TASK_FILES_IN_CONTAINER, VOLUME_NAME, VOLUME_READ_WRITE_MODE, ErrorMsgs
 
 
 def safe_call(msg: str):
@@ -30,7 +30,6 @@ def safe_call(msg: str):
     return decorator
 
 
-@safe_call("Ошибка при запуске контейнера")
 def run_container(image_name: str, abs_path_task_files, version: str = "latest", container_start_cfg: dict | None = None):
     """
         Запускает docker контейнер на основе образа
@@ -42,6 +41,9 @@ def run_container(image_name: str, abs_path_task_files, version: str = "latest",
 
         :return: объект контейнера
     """
+    if not image_name or not abs_path_task_files:
+        raise Exception(ErrorMsgs.EMPTY_CONT_PARAMS.value)
+
     _image_name: str = ":".join([image_name, version])
     unique_key: str = "".join(str(uuid4()).split("-"))
     cont_name: str = f"{image_name}-{unique_key}"
@@ -74,13 +76,13 @@ def run_container(image_name: str, abs_path_task_files, version: str = "latest",
 
 def stop_container(cont) -> None:
     """
-        Останавливает переданный контейнер, чистит его volume.
+        Останавливает переданный контейнер, чистит неиспользуемые volume.
 
         :param cont: объект контейнера
     """
     cont.stop()
 
-    # удаление вместе с volume
-    cont.remove(v=True)
+    # удаление неисользуемых volume
+    os.system("docker volume prune y")
 
     print(f"Контейнер {cont.name} удален")

@@ -65,7 +65,10 @@ def check_solution(
 
     task_checker_cls, container_start_cfg = CHECKER_DATA_BY_IMAGE_NAME[docker_image_name]
 
-    cont = run_container(docker_image_name, abs_path_task_files, version, container_start_cfg)
+    try:
+        cont = run_container(docker_image_name, abs_path_task_files, version, container_start_cfg)
+    except Exception as exc:
+        raise Exception(f"Ошибка при запуске контейнера: {str(exc)}")
 
     result: dict[str, bool | None] = {}
     task_checker: IDbSolutionChecker = task_checker_cls(cont)
@@ -75,7 +78,7 @@ def check_solution(
             task_checker.prepare_db(abs_path_task_files, prepare_file_names)
         except Exception:
             stop_container(cont)
-            raise
+            raise Exception(ErrorMsgs.NOT_PREPARE_DB.value)
 
     for to_be_checked_file, verifying_file in files_to_check.items():
         try:
