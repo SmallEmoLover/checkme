@@ -4,9 +4,12 @@
 
 __author__ = "ad.feklistov"
 
+import os
 import time
 import docker
 from uuid import uuid4
+
+from .constants import PATH_TASK_FILES_IN_CONTAINER, VOLUME_NAME, VOLUME_READ_WRITE_MODE, PATH_DOCKER_VOLUME
 
 
 def safe_call(msg: str):
@@ -28,18 +31,19 @@ def safe_call(msg: str):
 
 
 @safe_call("Ошибка при запуске контейнера")
-def run_container(image_name: str, version: str = "latest", container_start_cfg: dict | None = None):
+def run_container(image_name: str, abs_path_task_files, version: str = "latest", container_start_cfg: dict | None = None):
     """
         Запускает docker контейнер на основе образа
 
         :param image_name: название образа
+        :param abs_path_task_files: абсолютный путь до папки с файлами задачи
         :param version: версия образа
         :param container_start_cfg: прикладные параметры для запуска контейнера
 
         :return: объект контейнера
     """
     _image_name: str = ":".join([image_name, version])
-    unique_key: str = str(uuid4())
+    unique_key: str = "".join(str(uuid4()).split("-"))
     cont_name: str = f"{image_name}-{unique_key}"
 
     print(f"Запуск контейнера...\nОбраз: {_image_name}\nНазвание: {cont_name}")
@@ -48,14 +52,20 @@ def run_container(image_name: str, version: str = "latest", container_start_cfg:
         image=_image_name,
         name=cont_name,
         detach=True,  # запускаем в фоновом режиме(сразу возвращается объект контейнера),
-        shm_size="128m",
-        mem_limit="512m",
+        shm_size="128m",  # размер общей памяти, выделенной контейнеру
+        mem_limit="750m",  # после этого предела оперативной памяти контейнер аварийно завершится
+
+        # создадим volume для, чтобы при создании файлов она автоматически появлялись на хосте
+        volumes={
+            VOLUME_NAME.format(unique_key): {"bind": PATH_TASK_FILES_IN_CONTAINER, "mode": VOLUME_READ_WRITE_MODE}
+        },
         **(container_start_cfg or {})
     )
 
-    # TODO: найти более изящное решение
-    # проблема: контейнер может не успеть запуститься полностью, а скрипт будет слать ему команды
     time.sleep(15)
+
+    # прокинем папку с файлами задачи в контейнер
+    os.system(f'docker cp "{abs_path_task_files}/." "{cont_name}":"{PATH_TASK_FILES_IN_CONTAINER}"')
 
     print(f"Контейнер {cont_name} успешно запущен")
 

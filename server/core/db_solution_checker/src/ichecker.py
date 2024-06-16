@@ -18,20 +18,22 @@ class IDbSolutionChecker:
         self.container = container
 
     @abstractmethod
-    def prepare_db(self, prepare_file_path: str) -> None:
+    def prepare_db(self, abs_path_task_files: str, prepare_file_names: list[str]) -> None:
         """
             Подготовка БД к тестам.
 
-            :param prepare_file_path: имя файла для подготовки БД
+            :param abs_path_task_files: абсолютный путь до папки с файлами задачи
+            :param prepare_file_names: список названий файлов для подготовки БД к тестам
         """
 
     @abstractmethod
-    def check(self, to_be_checked_file_path: str, verifying_file_path: str) -> bool:
+    def check(self, abs_path_task_files: str, to_be_checked_file_name: str, verifying_file_name: str) -> bool:
         """
             Выполнение основной проверки задачи.
 
-            :param to_be_checked_file_path: файл с решением для проверки
-            :param verifying_file_path: проверяющий файл
+            :param abs_path_task_files: абсолютный путь до папки с файлами задачи
+            :param to_be_checked_file_name: название файла с решением для проверки
+            :param verifying_file_name: название проверяющего файла
 
             :return: True, решение верно, иначе False
         """

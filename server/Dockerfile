@@ -4,8 +4,7 @@ WORKDIR /app
 RUN npm install
 RUN mkdir /checks
 RUN apt-get update
-RUN apt-get install docker.io -y
-RUN apt-get install libpq-dev libssl-dev python3.11-venv -y
+RUN apt-get install docker.io libpq-dev libssl-dev python3.11-venv -y
 RUN xargs -a /app/test_packages.txt apt-get install -y
 RUN python3 -m venv /app/server_venv
 ENV PATH="/app/server_venv/bin:$PATH"

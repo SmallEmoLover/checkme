@@ -92,7 +92,7 @@ app.post('/check/:task_id', authorize, utils.runRouteAsync(async (request, respo
         if (task.dbType) {
             solve_db_task(task, check_id, answers);
         } else {
-            solve_task(check_id, task_id, answers, 'dbPrepare.sql');
+            solve_task(check_id, task_id, answers);
         }
     });
 }));

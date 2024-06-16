@@ -4,140 +4,80 @@
 
 __author__ = "ad.feklistov"
 
-import docker
-import mysql.connector
-import psycopg2
+import os
+import filecmp
 
 from .ichecker import IDbSolutionChecker
-from .constants import DB_NAME, DB_USER_NAME, DB_USER_PASSWORD
+from .constants import (
+    DB_PASSWORD_ROOT, DB_USER_ROOT, BASH_COMMAND_IN_CONTAINER, PATH_TASK_FILES_IN_CONTAINER, PATH_DOCKER_VOLUME)
 
 
-class PostgresSolutionChecker(IDbSolutionChecker):
-    """
-        Класс-проверщик решений задач по PostgreSQL
-    """
-    __slots__ = ("port",)
-
-    def __init__(self, container):
-        super().__init__(container)
-
-        # сохраним порт контейнера с сервером PostgreSQL, на котором будем проверять решение
-        self.port = docker.from_env().api.port(container.name, "5432/tcp")[0]["HostPort"]
-
-    def prepare_db(self, prepare_file_path: str) -> None:
-        """
-            Подготовка БД к тестам.
-
-            :param prepare_file_path: имя файла для подготовки БД
-        """
-        conn = psycopg2.connect(
-            host="127.0.0.1",
-            port=self.port,
-            dbname=DB_NAME,
-            user=DB_USER_NAME,
-            password=DB_USER_PASSWORD
-        )
-        cursor = conn.cursor()
-
-        with open(prepare_file_path, "r") as f:
-            cursor.execute("".join(f.readlines()))
-
-        cursor.close()
-        conn.close()
-
-    def check(self, to_be_checked_file_path: str, verifying_file_path: str) -> bool:
-        """
-            Выполнение основной проверки задачи.
-
-            :param to_be_checked_file_path: файл с решением для проверки
-            :param verifying_file_path: проверяющий файл
-
-            :return: True, решение верно, иначе False
-        """
-        conn = psycopg2.connect(
-            dbname=DB_NAME,
-            user=DB_USER_NAME,
-            password=DB_USER_PASSWORD,
-            host="127.0.0.1",
-            port=self.port
-        )
-        cursor = conn.cursor()
-
-        with open(to_be_checked_file_path, "r") as f1:
-            cursor.execute("".join(f1.readlines()))
-            res1 = cursor.fetchall()
-            res1_frmt = []
-            for rec in res1:
-                res = {}
-                for col_obj, val in zip(cursor.description, rec):
-                    res[col_obj.name] = val
-                res1_frmt.append(res)
-
-        with open(verifying_file_path, "r") as f2:
-            cursor.execute("".join(f2.readlines()))
-            res2 = cursor.fetchall()
-            res2_frmt = []
-            for rec in res2:
-                res = {}
-                for col_obj, val in zip(cursor.description, rec):
-                    res[col_obj.name] = val
-                res2_frmt.append(res)
-
-        print(res1_frmt)
-        print(res2_frmt)
-
-        cursor.close()
-        conn.close()
-
-        return res1_frmt == res2_frmt
+TO_BE_CHECKED_RES_FILE_NAME = "to_be_checked_res.txt"
+VERIFYING_RES_FILE_NAME = "verifying_res.txt"
+MYSQL_CLIENT_ROOT_CONNECTION = f"mysql -u {DB_USER_ROOT} --password={DB_PASSWORD_ROOT}"
 
 
 class MySqlSolutionChecker(IDbSolutionChecker):
     """
         Класс-проверщик решений задач по MySQL
     """
-    __slots__ = ("port",)
+    __slots__ = ()
 
-    def __init__(self, container):
-        super().__init__(container)
-
-        # сохраним порт контейнера с сервером PostgreSQL, на котором будем проверять решение
-        self.port = docker.from_env().api.port(container.name, "3306/tcp")[0]["HostPort"]
-
-    def prepare_db(self, prepare_file_path: str) -> None:
+    def prepare_db(self, abs_path_task_files: str, prepare_file_names: list[str]) -> None:
         """
-            Файл-обработчик перед всеми тестами.
+            Подготовка базы данных для проверки решения.
 
-            :param prepare_file_path: имя файла-обработчика.
+            :param abs_path_task_files: абсолютный путь до папки с файлами задачи
+            :param prepare_file_names: список названий файлов для подготовки БД к тестам
         """
-        with mysql.connector.connect(
-                host="127.0.0.1", port=self.port, user=DB_USER_NAME, password=DB_USER_PASSWORD, database=DB_NAME
-        ) as connection:
-            with connection.cursor() as cursor:
-                with open(prepare_file_path, "r") as f:
-                    cursor.execute("".join(f.readlines()), multi=True)
+        for prepare_file_name in prepare_file_names:
+            self.container.exec_run(
+                BASH_COMMAND_IN_CONTAINER.format(f'\
+                    cd "{PATH_TASK_FILES_IN_CONTAINER}"\
+                    && mysql -u {DB_USER_ROOT} --password={DB_PASSWORD_ROOT} < "{prepare_file_name}"\
+                ')
+            )
 
-    def check(self, to_be_checked_file_path: str, verifying_file_path: str) -> bool:
+    def check(self, abs_path_task_files: str, to_be_checked_file_name: str, verifying_file_name: str) -> bool:
         """
             Выполнение основной проверки задачи.
 
-            :param to_be_checked_file_path: файл с решением для проверки
-            :param verifying_file_path: проверяющий файл
+            :param abs_path_task_files: абсолютный путь до папки с файлами задачи
+            :param to_be_checked_file_name: название файла с решением для проверки
+            :param verifying_file_name: название проверяющего файла
 
             :return: True, решение верно, иначе False
         """
-        with mysql.connector.connect(
-                host="127.0.0.1", port=self.port, user=DB_USER_NAME, password=DB_USER_PASSWORD, database=DB_NAME
-        ) as connection:
-            with connection.cursor() as cursor:
-                with open(to_be_checked_file_path, "r") as f1:
-                    cursor.execute("".join(f1.readlines()), multi=True)
-                    res1 = cursor.fetchall()
-                with open(verifying_file_path, "r") as f2:
-                    cursor.execute("".join(f2.readlines()), multi=True)
-                    res2 = cursor.fetchall()
+        with open(os.path.join(abs_path_task_files, verifying_file_name), "r") as file:
+            if not file.readlines():
+                raise Exception("Передан пустой проверяющий файл")
 
-        print(res1)
-        print(res2)
+        # запустим проверяемый файл и сохраним результат в файл
+        self.container.exec_run(
+            BASH_COMMAND_IN_CONTAINER.format(f'\
+                cd "{PATH_TASK_FILES_IN_CONTAINER}"\
+                && {MYSQL_CLIENT_ROOT_CONNECTION}\
+                < "{to_be_checked_file_name}" > "{TO_BE_CHECKED_RES_FILE_NAME}"\
+            ')
+        )
 
-        return res1 == res2
+        # запустим проверяющий файл и сохраним результат в файл
+        self.container.exec_run(
+            BASH_COMMAND_IN_CONTAINER.format(f'\
+                cd "{PATH_TASK_FILES_IN_CONTAINER}"\
+                && {MYSQL_CLIENT_ROOT_CONNECTION}\
+                < "{verifying_file_name}" > "{VERIFYING_RES_FILE_NAME}"\
+            ')
+        )
+
+        # проверим различия файлов по содержимому
+        unique_cont_key: str = "".join(self.container.name.split("-")[1:])
+        path_docker_volume: str = PATH_DOCKER_VOLUME.format(unique_cont_key)
+        to_be_checked_res_file: str = os.path.join(path_docker_volume, TO_BE_CHECKED_RES_FILE_NAME)
+        verifying_res_file: str = os.path.join(path_docker_volume, VERIFYING_RES_FILE_NAME)
+        result: bool = filecmp.cmp(to_be_checked_res_file, verifying_res_file, False)
+
+        os.remove(to_be_checked_res_file)
+        os.remove(verifying_res_file)
+
+        return result

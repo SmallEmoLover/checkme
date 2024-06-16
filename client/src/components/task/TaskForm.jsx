@@ -92,9 +92,8 @@ function TaskForm() {
             { isDBTask && (
                 <>
                     <h3> База данных </h3>
-                    <select {...addInput('dbType', null, 'postgres')}>
-                        <option value="text"> postgres </option>
-                        <option value="file"> mysql </option>
+                    <select {...addInput('dbType', null, 'mysql')}>
+                        <option value="mysql"> mysql </option>
                     </select>
                 </>
             ) }
@@ -210,7 +209,7 @@ function TaskForm() {
                     </select>
                 </div>
             ))}
-            { !isDBTask && (
+            { true && (
                 <>
                     <h3> Архив с дополнительными файлами </h3>
                     <div className="criterion-select">
