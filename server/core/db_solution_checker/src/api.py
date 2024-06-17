@@ -80,12 +80,15 @@ def check_solution(
             stop_container(cont)
             raise Exception(ErrorMsgs.NOT_PREPARE_DB.value)
 
+        print(f"Проведена подготовка БД в контейнере {cont.name}")
+
     for to_be_checked_file, verifying_file in files_to_check.items():
         try:
             result[to_be_checked_file] = task_checker.check(abs_path_task_files, to_be_checked_file, verifying_file)
         except Exception as exc:
             print(f"Ошибка при проверке файла: {to_be_checked_file}\n{str(exc)}")
             result[to_be_checked_file] = False
+        print(f"Проверен файл {to_be_checked_file} в контейнере {cont.name}")
 
     stop_container(cont)
 

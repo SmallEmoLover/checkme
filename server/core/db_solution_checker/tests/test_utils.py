@@ -2,7 +2,7 @@ import os
 import unittest
 
 import docker
-from src.api import run_container, stop_container
+from src.utils import run_container, stop_container
 
 
 class TestSolutionChecker(unittest.TestCase):

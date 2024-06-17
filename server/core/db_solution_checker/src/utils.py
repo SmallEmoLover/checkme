@@ -80,9 +80,14 @@ def stop_container(cont) -> None:
 
         :param cont: объект контейнера
     """
+    cont_name: str = cont.name
+
     cont.stop()
 
-    # удаление неисользуемых volume
-    os.system("docker volume prune y")
+    client = docker.from_env()
+
+    client.api.remove_container(cont_name, v=True)
+
+    client.api.remove_volume(VOLUME_NAME.format("".join(cont_name.split("-")[1:])))
 
     print(f"Контейнер {cont.name} удален")
