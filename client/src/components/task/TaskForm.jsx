@@ -118,7 +118,7 @@ function TaskForm() {
                 {
                     isDBTask ? (
                         <div className="criterion-select">
-                            <div className="criterion-select-label"> Файл подготовки БД: </div>
+                            <div className="criterion-select-label"> Файл подготовки БД(должен называться dbPrepare.sql): </div>
                             <select
                                 {...addInput('dbPrepare', null, '')}
                                 className="criterion-select-input"
