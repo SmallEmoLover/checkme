@@ -5,11 +5,13 @@
 __author__ = "ad.feklistov"
 
 import os
+import shutil
 import time
 import docker
 from uuid import uuid4
 
-from .constants import PATH_TASK_FILES_IN_CONTAINER, VOLUME_NAME, VOLUME_READ_WRITE_MODE, ErrorMsgs
+from .constants import (
+    PATH_TASK_FILES_IN_CONTAINER, VOLUME_READ_WRITE_MODE, PATH_RESULT_IN_CONTAINER, RESULT_DIR_LOCAL_NAME, ErrorMsgs)
 
 
 def safe_call(msg: str):
@@ -50,6 +52,9 @@ def run_container(image_name: str, abs_path_task_files, version: str = "latest",
 
     print(f"Запуск контейнера...\nОбраз: {_image_name}\nНазвание: {cont_name}")
 
+    result_abs_path = os.path.join(abs_path_task_files, RESULT_DIR_LOCAL_NAME.format(unique_key))
+    os.mkdir(result_abs_path)
+
     cont = docker.from_env().containers.run(
         image=_image_name,
         name=cont_name,
@@ -57,9 +62,9 @@ def run_container(image_name: str, abs_path_task_files, version: str = "latest",
         shm_size="128m",  # размер общей памяти, выделенной контейнеру
         mem_limit="750m",  # после этого предела оперативной памяти контейнер аварийно завершится
 
-        # создадим volume для, чтобы при создании файлов она автоматически появлялись на хосте
+        # создадим volume для, чтобы при создании файлов в контейнере они автоматически появлялись на хосте
         volumes={
-            VOLUME_NAME.format(unique_key): {"bind": PATH_TASK_FILES_IN_CONTAINER, "mode": VOLUME_READ_WRITE_MODE}
+            result_abs_path: {"bind": PATH_RESULT_IN_CONTAINER, "mode": VOLUME_READ_WRITE_MODE}
         },
         **(container_start_cfg or {})
     )
@@ -74,20 +79,27 @@ def run_container(image_name: str, abs_path_task_files, version: str = "latest",
     return cont
 
 
-def stop_container(cont) -> None:
+def stop_container(cont, abs_path_task_files: str,) -> None:
     """
         Останавливает переданный контейнер, чистит неиспользуемые volume.
 
         :param cont: объект контейнера
+        :param abs_path_task_files: абсолютный путь до папки с файлами задачи
     """
+    if not cont:
+        return
+
     cont_name: str = cont.name
 
     cont.stop()
 
     client = docker.from_env()
 
+    # удаляем контейнер вместе с созданными для него volume
     client.api.remove_container(cont_name, v=True)
 
-    client.api.remove_volume(VOLUME_NAME.format("".join(cont_name.split("-")[1:])))
+    path_result_dir = os.path.join(abs_path_task_files, RESULT_DIR_LOCAL_NAME.format("".join(cont_name.split("-")[1:])))
+    if os.path.exists(path_result_dir) and os.path.isdir(path_result_dir):
+        shutil.rmtree(path_result_dir)
 
     print(f"Контейнер {cont.name} удален")

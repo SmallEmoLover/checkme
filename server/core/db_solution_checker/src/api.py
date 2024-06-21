@@ -68,7 +68,7 @@ def check_solution(
     try:
         cont = run_container(docker_image_name, abs_path_task_files, version, container_start_cfg)
     except Exception as exc:
-        raise Exception(f"Ошибка при запуске контейнера: {str(exc)}")
+        raise Exception(f"{ErrorMsgs.NOT_STARTED_CONT.value}:\n {str(exc)}")
 
     result: dict[str, bool | None] = {}
     task_checker: IDbSolutionChecker = task_checker_cls(cont)
@@ -76,9 +76,9 @@ def check_solution(
     if prepare_file_names:
         try:
             task_checker.prepare_db(abs_path_task_files, prepare_file_names)
-        except Exception:
-            stop_container(cont)
-            raise Exception(ErrorMsgs.NOT_PREPARE_DB.value)
+        except Exception as exc:
+            stop_container(cont, abs_path_task_files)
+            raise Exception(f"{ErrorMsgs.NOT_PREPARE_DB.value}:\n {str(exc)}")
 
         print(f"Проведена подготовка БД в контейнере {cont.name}")
 
@@ -86,10 +86,10 @@ def check_solution(
         try:
             result[to_be_checked_file] = task_checker.check(abs_path_task_files, to_be_checked_file, verifying_file)
         except Exception as exc:
-            print(f"Ошибка при проверке файла: {to_be_checked_file}\n{str(exc)}")
+            print(f"{ErrorMsgs.ERROR_WHILE_CHECK_FILE.value}: {to_be_checked_file}\n{str(exc)}")
             result[to_be_checked_file] = False
         print(f"Проверен файл {to_be_checked_file} в контейнере {cont.name}")
 
-    stop_container(cont)
+    stop_container(cont, abs_path_task_files)
 
     return result

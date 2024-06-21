@@ -11,9 +11,9 @@ DB_USER_ROOT = "root"
 DB_PASSWORD_ROOT = "root_password"
 BASH_COMMAND_IN_CONTAINER = 'bash -c "{}"'
 PATH_TASK_FILES_IN_CONTAINER = "/task_files"
-VOLUME_NAME = "vol_{}"
+PATH_RESULT_IN_CONTAINER = "/result"
+RESULT_DIR_LOCAL_NAME = "result_{}"
 VOLUME_READ_WRITE_MODE = "rw"
-PATH_DOCKER_VOLUME = f"/var/lib/docker/volumes/{VOLUME_NAME}/_data"
 
 
 @enum.unique
@@ -36,3 +36,4 @@ class ErrorMsgs(enum.StrEnum):
     EMPTY_CHECK_FILES = "Передано пустое название файла для проверки или проверяющего"
     NOT_PREPARE_DB = "Ошибка при подготовке БД к тестам"
     NOT_STARTED_CONT = "Ошибка при запуске контейнера"
+    ERROR_WHILE_CHECK_FILE = "Ошибка при проверке файла"
