@@ -8,7 +8,7 @@ from src.constants import (
     PATH_RESULT_IN_CONTAINER, RESULT_DIR_LOCAL_NAME)
 
 
-SAKILA_DB_PATH = os.path.join(os.getcwd(), "tests/sakila-db")
+SAKILA_DB_PATH = os.path.join(os.getcwd(), "tests/sakila_db")
 
 
 class TestDbCheckers(unittest.TestCase):

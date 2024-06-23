@@ -6,7 +6,7 @@ from src.api import check_solution, run_container, stop_container
 from src.constants import ErrorMsgs
 
 
-SAKILA_DB_PATH = os.path.join(os.getcwd(), "tests/sakila-db")
+SAKILA_DB_PATH = os.path.join(os.getcwd(), "tests/sakila_db")
 
 
 class TestCheckSolution(unittest.TestCase):

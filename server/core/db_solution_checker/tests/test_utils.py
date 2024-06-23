@@ -6,7 +6,7 @@ from src.utils import run_container, stop_container
 from src.constants import ErrorMsgs, PATH_TASK_FILES_IN_CONTAINER, RESULT_DIR_LOCAL_NAME
 
 
-SAKILA_DB_PATH = os.path.join(os.getcwd(), "tests/sakila-db")
+SAKILA_DB_PATH = os.path.join(os.getcwd(), "tests/sakila_db")
 
 
 class TestUtils(unittest.TestCase):
