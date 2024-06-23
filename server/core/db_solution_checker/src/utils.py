@@ -43,8 +43,10 @@ def run_container(image_name: str, abs_path_task_files, version: str = "latest",
 
         :return: объект контейнера
     """
-    if not image_name or not abs_path_task_files:
-        raise Exception(ErrorMsgs.EMPTY_CONT_PARAMS.value)
+    if not image_name:
+        raise Exception(ErrorMsgs.EMPTY_CONT_NAME)
+    if not abs_path_task_files:
+        raise Exception(ErrorMsgs.WRONG_ABS_PATH.value)
 
     _image_name: str = ":".join([image_name, version])
     unique_key: str = "".join(str(uuid4()).split("-"))

@@ -3,41 +3,66 @@ import unittest
 
 import docker
 from src.utils import run_container, stop_container
-from src.constants import ErrorMsgs, PATH_TASK_FILES_IN_CONTAINER
+from src.constants import ErrorMsgs, PATH_TASK_FILES_IN_CONTAINER, RESULT_DIR_LOCAL_NAME
 
 
 SAKILA_DB_PATH = os.path.join(os.getcwd(), "tests/sakila-db")
 
 
-class TestSolutionChecker(unittest.TestCase):
+class TestUtils(unittest.TestCase):
 
-    def test_input_data_run_container(self):
-
-        # не передан абсолютный путь до файлов задачи -> ловим исключение с текстом
-        with self.assertRaises(Exception) as context:
-            _cont = run_container("mysql", None, None, None)
-
-            # не передан абсолютный путь до файлов задачи -> ловим исключение с текстом
-            with self.assertRaises(Exception) as context:
-                _cont = run_container("mysql", "", None, None)
-
-        self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CONT_PARAMS)
-
-        # не передано название контейнера -> ловим исключение с текстом
+    def test_none_cont_name(self):
+        """
+            Тестируем вызов функции запуска контейнера с None значения названия контейнера.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.WRONG_ABS_PATH.
+        """
         with self.assertRaises(Exception) as context:
             _cont = run_container(None, SAKILA_DB_PATH, None, None)
 
-        self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CONT_PARAMS)
+        self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CONT_NAME)
 
-        # не передано название контейнера -> ловим исключение с текстом
+    def test_empty_str_cont_name(self):
+        """
+            Тестируем вызов функции запуска контейнера с пустой строкой названия контейнера.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.WRONG_ABS_PATH.
+        """
         with self.assertRaises(Exception) as context:
             _cont = run_container("", SAKILA_DB_PATH, None, None)
 
-        self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CONT_PARAMS)
+        self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CONT_NAME)
+
+    def test_none_abs_path_task_files(self):
+        """
+            Тестируем вызов функции запуска контейнера с пустой строкой абсолютного пути до файлов задания.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.WRONG_ABS_PATH.
+        """
+        with self.assertRaises(Exception) as context:
+            _cont = run_container("mysql", None, None, None)
+
+        self.assertEqual(str(context.exception), ErrorMsgs.WRONG_ABS_PATH)
+
+    def test_empty_str_abs_path_task_files(self):
+        """
+            Тестируем вызов функции запуска контейнера с None значением абсолютного пути до файлов задания.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.WRONG_ABS_PATH.
+        """
+        with self.assertRaises(Exception) as context:
+            _cont = run_container("mysql", "", None, None)
+
+        self.assertEqual(str(context.exception), ErrorMsgs.WRONG_ABS_PATH)
 
     def test_container_life(self):
         """
             Проверка методов для работы с жизненным циклом контейнера.
+            ОР:
+                контейнер запущен и принимает команды, т.е. не падает
+                внутри контейнера создались директории для результата и файлов задания
+                файлы задания скопировались
+                контейнер остановился, директория с результатам на хостовой ОС удалена
         """
         client = docker.from_env()
 
@@ -71,8 +96,10 @@ class TestSolutionChecker(unittest.TestCase):
             self.assertIn(elem, ls_task_files_output)
 
         # остановка контейнера и удаление
+        cont_unique_key = "".join(new_cont.name.split("-")[1:])
         stop_container(new_cont, SAKILA_DB_PATH)
         self.assertNotIn(cont_id, [cont.id for cont in client.containers.list()])
+        self.assertFalse(os.path.exists(os.path.join(SAKILA_DB_PATH, RESULT_DIR_LOCAL_NAME.format(cont_unique_key))))
 
 
 if __name__ == "__main__":

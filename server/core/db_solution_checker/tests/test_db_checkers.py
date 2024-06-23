@@ -11,11 +11,13 @@ from src.constants import (
 SAKILA_DB_PATH = os.path.join(os.getcwd(), "tests/sakila-db")
 
 
-class TestSolutionChecker(unittest.TestCase):
+class TestDbCheckers(unittest.TestCase):
 
     def test_prepare_db(self):
         """
-            Проверка выполненяи подготовки БД.
+            Тестируем выполнение подготовки БД.
+            ОР:
+                в базе есть подготовленные данные
         """
         new_cont = run_container(
             "mysql",
@@ -35,14 +37,18 @@ class TestSolutionChecker(unittest.TestCase):
         )
         with open(os.path.join(SAKILA_DB_PATH, f"{RESULT_DIR_LOCAL_NAME.format(''.join(new_cont.name.split('-')[1:]))}",
                                "res.txt")) as f:
+
+            # заранее посмотрели сколько строк в таблице actor
             self.assertEqual(["count", "200"], [elem.strip() for elem in f.readlines()])
 
         # остановка контейнера и удаление контейнера
         stop_container(new_cont, SAKILA_DB_PATH)
 
-    def test_check(self):
+    def test_check_pos_case(self):
         """
-            Проверка выполненяи подготовки БД.
+            Тестируем выполнение проверки файлов в положительном сценарии.
+            ОР:
+                проверка пройдена успешно
         """
         new_cont = run_container(
             "mysql",
@@ -55,6 +61,25 @@ class TestSolutionChecker(unittest.TestCase):
         checker.prepare_db(SAKILA_DB_PATH, ["sakila-schema.sql", "sakila-data.sql"])
 
         self.assertTrue(checker.check(SAKILA_DB_PATH, "to_be_checked_correct.sql", "verify.sql"))
+
+        # остановка контейнера и удаление контейнера
+        stop_container(new_cont, SAKILA_DB_PATH)
+
+    def test_check_neg_case(self):
+        """
+            Тестируем выполнение проверки файлов в положительном сценарии.
+            ОР:
+                проверка пройдена успешно
+        """
+        new_cont = run_container(
+            "mysql",
+            SAKILA_DB_PATH,
+            container_start_cfg={"environment": {"MYSQL_ROOT_PASSWORD": DB_PASSWORD_ROOT}}
+        )
+
+        checker = MySqlSolutionChecker(new_cont)
+
+        checker.prepare_db(SAKILA_DB_PATH, ["sakila-schema.sql", "sakila-data.sql"])
 
         self.assertFalse(checker.check(SAKILA_DB_PATH, "to_be_checked_wrong.sql", "verify.sql"))
 

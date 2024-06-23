@@ -61,7 +61,7 @@ def check_solution(
         raise Exception(ErrorMsgs.EMPTY_CHECK_FILES)
 
     if docker_image_name not in CHECKER_DATA_BY_IMAGE_NAME:
-        raise Exception(ErrorMsgs.WRONG_SOLUTION_CHECKER)
+        raise Exception(ErrorMsgs.WRONG_CONTAINER)
 
     task_checker_cls, container_start_cfg = CHECKER_DATA_BY_IMAGE_NAME[docker_image_name]
 

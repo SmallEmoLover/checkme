@@ -11,51 +11,100 @@ SAKILA_DB_PATH = os.path.join(os.getcwd(), "tests/sakila-db")
 
 class TestCheckSolution(unittest.TestCase):
 
-    def test_wrong_input_data(self):
-
-        # не передан абсолютный путь до файлов задачи -> ловим исключение с текстом
+    def test_none_abs_path_task_files(self):
+        """
+            Тестируем вызов функции проверки решения с None значением абсолютного пути до файлов задачи.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.WRONG_ABS_PATH.
+        """
         with self.assertRaises(Exception) as context:
             _result = check_solution(None, None, None, None)
 
         self.assertEqual(str(context.exception), ErrorMsgs.WRONG_ABS_PATH)
 
-        # передан неподдерживаемый тип контейнера-> ловим исключение с текстом
+    def test_empty_str_abs_path_task_files(self):
+        """
+            Тестируем вызов функции проверки решения с пустым абсолютным путём до файлов задачи.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.WRONG_ABS_PATH.
+        """
+        with self.assertRaises(Exception) as context:
+            _result = check_solution(None, None, None, None)
+
+        self.assertEqual(str(context.exception), ErrorMsgs.WRONG_ABS_PATH)
+
+    def test_wrong_container(self):
+        """
+            Тестируем передачу неподдерживаемого типа контейнера.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.WRONG_CONTAINER.
+        """
         with self.assertRaises(Exception) as context:
             _result = check_solution("wrong container name", SAKILA_DB_PATH, {"sol1": "verify"}, None)
 
-        self.assertEqual(str(context.exception), ErrorMsgs.WRONG_SOLUTION_CHECKER)
+        self.assertEqual(str(context.exception), ErrorMsgs.WRONG_CONTAINER)
 
-        # не переданы файлы для проверки -> ловим исключение с текстом
+    def test_none_check_files(self):
+        """
+            Тестируем передачу None значения для проверямых файлов.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.EMPTY_CHECK_FILES.
+        """
         with self.assertRaises(Exception) as context:
             _result = check_solution("mysql", SAKILA_DB_PATH, None, None)
 
         self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CHECK_FILES)
 
-        # не переданы файлы для проверки -> ловим исключение с текстом
+    def test_empty_dict_check_files(self):
+        """
+            Тестируем передачу пустого словаря для проверямых файлов.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.EMPTY_CHECK_FILES.
+        """
         with self.assertRaises(Exception) as context:
             _result = check_solution("mysql", SAKILA_DB_PATH, {}, None)
 
         self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CHECK_FILES)
 
-        # один из проверяемых файлов пуст -> ловим исключение с текстом
+    def test_none_checked_file(self):
+        """
+            Тестируем передачу None значения для названия проверяемого файла в словаре проверямых файлов.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.EMPTY_CHECK_FILES.
+        """
         with self.assertRaises(Exception) as context:
             _result = check_solution("mysql", SAKILA_DB_PATH, {None: "verify", "sol1": "verify"}, None)
 
         self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CHECK_FILES)
 
-        # один из проверочных файлов пуст -> ловим исключение с текстом
-        with self.assertRaises(Exception) as context:
-            _result = check_solution("mysql", SAKILA_DB_PATH, {"sol2": None, "sol1": "verify"}, None)
-
-        self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CHECK_FILES)
-
-        # один из проверяемых файлов пуст -> ловим исключение с текстом
+    def test_empty_str_checked_file(self):
+        """
+            Тестируем передачу пустой строки для названия проверяемого файла в словаре проверямых файлов.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.EMPTY_CHECK_FILES.
+        """
         with self.assertRaises(Exception) as context:
             _result = check_solution("mysql", SAKILA_DB_PATH, {"": "verify", "sol1": "verify"}, None)
 
         self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CHECK_FILES)
 
-        # один из проверочных файлов пуст -> ловим исключение с текстом
+    def test_none_checking_file(self):
+        """
+            Тестируем передачу None значения для названия проверяющего файла в словаре проверямых файлов.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.EMPTY_CHECK_FILES.
+        """
+        with self.assertRaises(Exception) as context:
+            _result = check_solution("mysql", SAKILA_DB_PATH, {"sol2": None, "sol1": "verify"}, None)
+
+        self.assertEqual(str(context.exception), ErrorMsgs.EMPTY_CHECK_FILES)
+
+    def test_empty_str_checking_file(self):
+        """
+            Тестируем передачу пустой строки для названия проверяющего файла в словаре проверямых файлов.
+            ОР:
+                бросается исключение с описанием с текстом ErrorMsgs.EMPTY_CHECK_FILES.
+        """
         with self.assertRaises(Exception) as context:
             _result = check_solution("mysql", SAKILA_DB_PATH, {"sol2": "", "sol1": "verify"}, None)
 
@@ -73,9 +122,12 @@ class TestCheckSolution(unittest.TestCase):
         self.assertIn(ErrorMsgs.NOT_STARTED_CONT, str(context.exception))
         self.assertIn(err_msg, str(context.exception))
 
-    def test_check_solution(self):
-
-        # положительный сценарий
+    def test_check_solution_pos_case(self):
+        """
+            Тестируем полную работу функции проверки задания в положительном сценарии.
+            ОР:
+                проверка пройдена успешно
+        """
         result = check_solution(
             "mysql",
             SAKILA_DB_PATH,
@@ -85,7 +137,12 @@ class TestCheckSolution(unittest.TestCase):
 
         self.assertTrue(result["to_be_checked_correct.sql"])
 
-        # негативный сценарий
+    def test_check_solution_neg_case(self):
+        """
+            Тестируем полную работу функции проверки задания в негативном сценарии.
+            ОР:
+                проверка пройдена неуспешно
+        """
         result = check_solution(
             "mysql",
             SAKILA_DB_PATH,
