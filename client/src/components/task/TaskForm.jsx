@@ -26,6 +26,7 @@ function TaskForm() {
     const [inputsValues, addInput] = useForm();
     const [criterions, setCriterions] = useState([]);
     const [answersFormat, setAnswersFormat] = useState(['answer1']);
+    const [isDBTask, setIsDBTask] = useState(false);
     const taskPost = usePost(
         '/task/new',
         (data) => navigate(`/task/${data.taskId}`),
@@ -43,6 +44,11 @@ function TaskForm() {
         const formData = new FormData();
         formData.append('name', inputsValues.name);
         formData.append('description', inputsValues.description);
+        formData.append('isDBTask', isDBTask);
+
+        if (isDBTask) {
+            formData.append('dbType', inputsValues.dbType);
+        }
 
         const correctedCriterions = JSON.parse(inputsValues.criterionsJson);
         for (const criterion of Object.keys(correctedCriterions)) {
@@ -59,7 +65,7 @@ function TaskForm() {
         inputsValues.files.forEach((file) => {
             formData.append(file.name, file, file.name);
         });
-        ['additional_files', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach((inputName) => {
+        ['dbPrepare', 'additional_files', 'beforeEach', 'afterEach', 'beforeAll', 'afterAll'].forEach((inputName) => {
             if (inputsValues[inputName]) {
                 formData.append(inputName, inputsValues[inputName]);
             }
@@ -75,18 +81,29 @@ function TaskForm() {
 
     return (
         <AdminRequired>
-            <h2> Создание задачи </h2>
+            <h2> Создание задачи { isDBTask ? 'проверки БД' : '' } </h2>
+            <button onClick={() => { setIsDBTask((state) => !state); }}>
+                { isDBTask ? 'Переключиться на создание обычной проверки' : 'Переключиться на создание проверки БД' }
+            </button>
             <h3> Название </h3>
             <input {...addInput('name')} />
             <h3> Описание </h3>
             <textarea {...addInput('description', null)} />
+            { isDBTask && (
+                <>
+                    <h3> База данных </h3>
+                    <select {...addInput('dbType', null, 'mysql')}>
+                        <option value="mysql"> mysql </option>
+                    </select>
+                </>
+            ) }
             <h3> Формат ответа </h3>
             {answersFormat.map((answer) => (
                 <div key={answer}>
                     <input {...addInput(answer)} />
-                    <select {...addInput(`${answer}Type`, null, 'text')}>
-                        <option value="text"> Текст </option>
+                    <select {...addInput(`${answer}Type`, null, 'file')}>
                         <option value="file"> Файл </option>
+                        { !isDBTask && <option value="text"> Текст </option> }
                     </select>
                 </div>
             ))}
@@ -98,54 +115,84 @@ function TaskForm() {
             <h3> Файлы тестов </h3>
             <div>
                 <input multiple="multiple" {...addInput('files', 'file')} />
-                <div className="criterion-select">
-                    <div className="criterion-select-label"> Выполнять перед каждым тестом: </div>
-                    <select
-                        {...addInput('beforeEach', null, '')}
-                        className="criterion-select-input"
-                    >
-                        <option value=""> Не выбрано </option>
-                        {inputsValues.files?.sort()?.map((file) => (
-                            <option key={file.name} value={file.name}> {file.name} </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="criterion-select">
-                    <div className="criterion-select-label"> Выполнять после каждого теста: </div>
-                    <select
-                        {...addInput('afterEach', null, '')}
-                        className="criterion-select-input"
-                    >
-                        <option value=""> Не выбрано </option>
-                        {inputsValues.files?.sort()?.map((file) => (
-                            <option key={file.name} value={file.name}> {file.name} </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="criterion-select">
-                    <div className="criterion-select-label"> Выполнить перед тестами: </div>
-                    <select
-                        {...addInput('beforeAll', null, '')}
-                        className="criterion-select-input"
-                    >
-                        <option value=""> Не выбрано </option>
-                        {inputsValues.files?.sort()?.map((file) => (
-                            <option key={file.name} value={file.name}> {file.name} </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="criterion-select">
-                    <div className="criterion-select-label"> Выполнять после тестов: </div>
-                    <select
-                        {...addInput('afterAll', null, '')}
-                        className="criterion-select-input"
-                    >
-                        <option value=""> Не выбрано </option>
-                        {inputsValues.files?.sort()?.map((file) => (
-                            <option key={file.name} value={file.name}> {file.name} </option>
-                        ))}
-                    </select>
-                </div>
+                {
+                    isDBTask ? (
+                        <div className="criterion-select">
+                            <div className="criterion-select-label"> Файл подготовки БД(должен называться dbPrepare.sql): </div>
+                            <select
+                                {...addInput('dbPrepare', null, '')}
+                                className="criterion-select-input"
+                            >
+                                <option value=""> Не выбрано </option>
+                                {inputsValues.files?.sort()?.map((file) => (
+                                    <option key={file.name} value={file.name}>
+                                        {file.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="criterion-select">
+                                <div className="criterion-select-label"> Выполнять перед каждым тестом: </div>
+                                <select
+                                    {...addInput('beforeEach', null, '')}
+                                    className="criterion-select-input"
+                                >
+                                    <option value=""> Не выбрано </option>
+                                    {inputsValues.files?.sort()?.map((file) => (
+                                        <option key={file.name} value={file.name}>
+                                            {file.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="criterion-select">
+                                <div className="criterion-select-label"> Выполнять после каждого теста: </div>
+                                <select
+                                    {...addInput('afterEach', null, '')}
+                                    className="criterion-select-input"
+                                >
+                                    <option value=""> Не выбрано </option>
+                                    {inputsValues.files?.sort()?.map((file) => (
+                                        <option key={file.name} value={file.name}>
+                                            {file.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="criterion-select">
+                                <div className="criterion-select-label"> Выполнить перед тестами: </div>
+                                <select
+                                    {...addInput('beforeAll', null, '')}
+                                    className="criterion-select-input"
+                                >
+                                    <option value=""> Не выбрано </option>
+                                    {inputsValues.files?.sort()?.map((file) => (
+                                        <option key={file.name} value={file.name}>
+                                            {file.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="criterion-select">
+                                <div className="criterion-select-label"> Выполнять после тестов: </div>
+                                <select
+                                    {...addInput('afterAll', null, '')}
+                                    className="criterion-select-input"
+                                >
+                                    <option value=""> Не выбрано </option>
+                                    {inputsValues.files?.sort()?.map((file) => (
+                                        <option key={file.name} value={file.name}>
+                                            {file.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </>
+                    )
+                }
+
             </div>
             <h3> Соотнесите тест с запускаемым файлом </h3>
             {criterions.sort().map((criterion) => (
@@ -162,23 +209,27 @@ function TaskForm() {
                     </select>
                 </div>
             ))}
-            <h3> Архив с дополнительными файлами </h3>
-            <div className="criterion-select">
-                <div className="criterion-select-label"> Архив (.zip) </div>
-                <select
-                    {...addInput('additional_files', null, '')}
-                    className="criterion-select-input"
-                >
-                    <option value=""> Без архива </option>
-                    {inputsValues.files
-                        ?.sort()
-                        ?.filter((file) => (
-                            file.name.endsWith('.zip')
-                        ))?.map?.((file) => (
-                            <option key={file.name} value={file.name}> {file.name} </option>
-                        ))}
-                </select>
-            </div>
+            { true && (
+                <>
+                    <h3> Архив с дополнительными файлами </h3>
+                    <div className="criterion-select">
+                        <div className="criterion-select-label"> Архив (.zip) </div>
+                        <select
+                            {...addInput('additional_files', null, '')}
+                            className="criterion-select-input"
+                        >
+                            <option value=""> Без архива </option>
+                            {inputsValues.files
+                                ?.sort()
+                                ?.filter((file) => (
+                                    file.name.endsWith('.zip')
+                                ))?.map?.((file) => (
+                                    <option key={file.name} value={file.name}> {file.name} </option>
+                                ))}
+                        </select>
+                    </div>
+                </>
+            )}
             <button disabled={!isFormDataReady()} onClick={onSubmit}> Отправить </button>
             <ErrorMessage message={taskPost.error} />
         </AdminRequired>

@@ -19,7 +19,7 @@ services:
         source: /tasks
         target: /tasks
   mongodb:
-    image: mongo:4.4
+    image: mongo
     command: -dbpath /dbdata
     volumes:
       - type: bind

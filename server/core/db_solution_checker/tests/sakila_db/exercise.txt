@@ -1,0 +1,24 @@
+1. Display the first and last names of all actors from the table actor.
+2. Display the first and last name of each actor in a single column in upper case letters. Name the column Actor Name.
+3. You need to find the ID number, first name, and last name of an actor, of whom you know only the first name, “Joe.” What is one query would you use to obtain this information?
+4. Find all actors whose last name contain the letters GEN:
+5. Find all actors whose last names contain the letters LI. This time, order the rows by last name and first name, in that order:
+6. Using IN, display the country_id and country columns of the following countries: Afghanistan, Bangladesh, and China:
+7. List the last names of actors, as well as how many actors have that last name.
+8. List last names of actors and the number of actors who have that last name, but only for names that are shared by at least two actors
+9. Oh, no! The actor HARPO WILLIAMS was accidentally entered in the actor table as GROUCHO WILLIAMS, the name of Harpo’s second cousin’s husband’s yoga teacher. Write a query to fix the record.
+10. Perhaps we were too hasty in changing GROUCHO to HARPO. It turns out that GROUCHO was the correct name after all! In a single query, if the first name of the actor is currently HARPO, change it to GROUCHO. Otherwise, change the first name to MUCHO GROUCHO, as that is exactly what the actor will be with the grievous error. BE CAREFUL NOT TO CHANGE THE FIRST NAME OF EVERY ACTOR TO MUCHO GROUCHO, HOWEVER!
+11. You cannot locate the schema of the address table. Which query would you use to re-create it?
+12. Use JOIN to display the first and last names, as well as the address, of each staff member. Use the tables staff and address:
+13. Use JOIN to display the total amount rung up by each staff member in August of 2005. Use tables staff and payment.
+14. List each film and the number of actors who are listed for that film. Use tables film_actor and film. Use inner join.
+15. How many copies of the film Hunchback Impossible exist in the inventory system?
+16. Using the tables payment and customer and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name:
+17. The music of Queen and Kris Kristofferson have seen an unlikely resurgence. As an unintended consequence, films starting with the letters K and Q have also soared in popularity. Use subqueries to display the titles of movies starting with the letters K and Q whose language is English.
+18. Use subqueries to display all actors who appear in the film Alone Trip.
+19. You want to run an email marketing campaign in Canada, for which you will need the names and email addresses of all Canadian customers. Use joins to retrieve this information.
+20. Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as famiy films.
+21. Display the most frequently rented movies in descending order.
+22. Write a query to display how much business, in dollars, each store brought in.
+23. Write a query to display for each store its store ID, city, and country.
+24. List the top five genres in gross revenue in descending order.

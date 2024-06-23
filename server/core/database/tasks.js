@@ -14,12 +14,6 @@ class Tasks {
     async get(task_id) {
         const task = await this.tasks.findOne(
             { _id: ObjectId(task_id) },
-            {
-                projection: {
-                    criterions: false,
-                    _id: false,
-                },
-            },
         );
         return task;
     }
@@ -44,13 +38,14 @@ class Tasks {
         return result;
     }
 
-    async create(name, criterions, answer_format, description) {
+    async create(name, criterions, answer_format, description, dbType) {
         const tasks = this.#database.collection('tasks');
         const result = await tasks.insertOne({
             name,
             criterions,
             answerFormat: answer_format,
             description,
+            dbType,
         });
         return result.insertedId.toString();
     }
